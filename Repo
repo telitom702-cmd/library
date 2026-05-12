@@ -1,0 +1,10 @@
+pkg update && pkg upgrade -y
+pkg install git gh -y
+
+gh auth login
+
+gh auth refresh -h github.com -s delete_repo
+
+gh repo delete username/repository --yes
+
+gh auth logout
