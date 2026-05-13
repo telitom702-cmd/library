@@ -13,3 +13,10 @@ gh auth logout
 BOT_TOKEN=8534427928:AAEeOKXj4L8bpkvw2FiOcwuQiPdwR5c9aOg
 MONGODB_URL=mongodb+srv://mdmongodv_db_user:cNUl29LDekpNbcd7@cluster0.sh6p6za.mongodb.net/?appName=Cluster0
 ADMIN_ID=5828992083
+
+01305476507
+BOT_TOKEN=8411636239:AAGj-zCnyBHvqnm6_EPwv3Di9eiQCsFlKh4
+
+MONGODB_URL=mongodb+srv://mongodbpy_db_user:pPgtRKyHsm8GvJF2@cluster0.u2ft5ps.mongodb.net/?appName=Cluster0
+
+ADMIN_ID=8248792819
