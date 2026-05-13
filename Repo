@@ -8,3 +8,8 @@ gh auth refresh -h github.com -s delete_repo
 gh repo delete username/repository --yes
 
 gh auth logout
+
+
+BOT_TOKEN=8534427928:AAEeOKXj4L8bpkvw2FiOcwuQiPdwR5c9aOg
+MONGODB_URL=mongodb+srv://mdmongodv_db_user:cNUl29LDekpNbcd7@cluster0.sh6p6za.mongodb.net/?appName=Cluster0
+ADMIN_ID=5828992083
