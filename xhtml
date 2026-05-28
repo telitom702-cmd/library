@@ -1,1 +1,836 @@
-&
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeliTask Pro - ড্যাশবোর্ড</title>
+    <style>
+        /* --- CSS Styles --- */
+        :root {
+            --primary: #0088cc;
+            --primary-dark: #006699;
+            --bg: #f0f2f5;
+            --surface: #ffffff;
+            --text: #1c1e21;
+            --text-secondary: #65676b;
+            --success: #31a24c;
+            --danger: #fa383e;
+            --warning: #ffc107;
+            --border: #ddd;
+            --shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #5eb3f3;
+            --primary-dark: #3b89c6;
+            --bg: #18191a;
+            --surface: #242526;
+            --text: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --border: #3e4042;
+            --shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 80px; }
+        
+        /* Header */
+        header { background: var(--surface); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        
+        /* Buttons */
+        button { cursor: pointer; border: none; outline: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); font-size: 14px; }
+        
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+        
+        /* Layout */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        
+        /* Cards */
+        .card { background: var(--surface); padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); }
+        .balance-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; text-align: center; }
+        .balance-amount { font-size: 32px; font-weight: bold; margin: 10px 0; }
+        
+        /* Task List */
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--surface); }
+        .task-info h4 { font-size: 15px; margin-bottom: 4px; }
+        .task-info span { font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; }
+        
+        /* Notifications */
+        .notif-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: start; }
+        .notif-icon { font-size: 20px; }
+        .notif-content h5 { font-size: 14px; margin-bottom: 2px; }
+        .notif-content p { font-size: 12px; color: var(--text-secondary); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; }
+        
+        /* Tabs */
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
+        .tab { padding: 6px 14px; cursor: pointer; border-radius: 20px; font-size: 13px; white-space: nowrap; background: rgba(0,0,0,0.05); }
+        .tab.active { background: var(--primary); color: white; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: 0.3s; z-index: 999; pointer-events: none; }
+        .toast.show { opacity: 1; bottom: 40px; }
+        
+        /* Warning Banner */
+        .warning-banner { background: var(--warning); color: #000; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
+        
+        /* Maintenance Mode Overlay */
+        #maintenanceOverlay {
+            display: none;
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--bg); z-index: 2000;
+            flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            padding: 20px;
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; border-bottom: 1px solid var(--border);
+        }
+        .rank { font-weight: bold; width: 30px; color: var(--primary); }
+        .user-info { flex-grow: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Maintenance Mode -->
+    <div id="maintenanceOverlay">
+        <h1 style="color:var(--primary); margin-bottom:10px;">🛠 মেইনটেনেন্স চলছে</h1>
+        <p id="maintenanceText">সার্ভার আপডেট চলছে, অনুগ্রহ করে কিছুক্ষণ পর আসুন।</p>
+    </div>
+
+    <!-- Warning Banner (Visible if Banned) -->
+    <div id="warningBanner" class="warning-banner"></div>
+
+    <header>
+        <div class="logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.02-1.25-2.02-1.25s-.71-.45-.25-1c.05-.05.97-1.08 3.51-3.43.25-.23.05-.35-.2-.15-2.87 2.02-4.85 3.4-4.85 3.4s-.65.25-1.75.25c-1.1 0-1.25-.35-1.25-.35s.25-.1 1.75-.7c3.5-1.5 7.15-3.45 7.15-3.45s.65-.3.65-.3.5-.15.65.1c.15.25.1 2.7.1 2.7z"/></svg>
+            TeliTask
+        </div>
+        <div class="user-controls">
+            <button class="btn-outline" onclick="toggleTheme()">🌓</button>
+            <button class="btn-outline" onclick="switchRole()" id="roleBtn">Admin Panel</button>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- USER DASHBOARD -->
+        <div id="userView">
+            <!-- Profile Header -->
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 id="profileName">User Name</h3>
+                    <small style="color: var(--text-secondary);">ID: <span id="userIdDisplay">...</span></small>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 12px; background: #e1f5fe; color: var(--primary); padding: 4px 8px; border-radius: 4px;">Device: Safe</span>
+                </div>
+            </div>
+
+            <div class="card balance-card">
+                <p>মোট ব্যালেন্স</p>
+                <div class="balance-amount">৳ <span id="userBalance">0.00</span></div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="tabs">
+                <div class="tab active" onclick="showSection('tasks')">টাস্ক</div>
+                <div class="tab" onclick="showSection('notifications')">নোটিশ <span id="notifBadge" style="background:red; color:white; border-radius:50%; padding:0 5px; font-size:10px; display:none">0</span></div>
+                <div class="tab" onclick="showSection('withdraw')">উত্তোলন</div>
+                <div class="tab" onclick="showSection('history')">হিস্ট্রি</div>
+                <div class="tab" onclick="showSection('leaderboard')">লিডারবোর্ড</div>
+            </div>
+
+            <!-- Tasks Section -->
+            <div id="tasks-section">
+                <div class="card">
+                    <h3>📢 উপলব্ধ টাস্ক</h3>
+                    <div id="taskList"></div>
+                </div>
+            </div>
+
+            <!-- Notification Section -->
+            <div id="notifications-section" style="display: none;">
+                <div class="card">
+                    <h3>🔔 নোটিশ বোর্ড</h3>
+                    <div id="notificationList">
+                        <p style="text-align:center; color: var(--text-secondary);">কোনো নোটিশ নেই</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdraw Section -->
+            <div id="withdraw-section" style="display: none;">
+                <div class="card">
+                    <h3>💸 টাকা উত্তোলন</h3>
+                    <form onsubmit="handleWithdraw(event)">
+                        <label>পরিমাণ (৳)</label>
+                        <input type="number" id="withdrawAmount" placeholder="মিনিমাম ৫০" min="50" required>
+                        <label>পেমেন্ট</label>
+                        <select id="paymentMethod">
+                            <option value="bkash">bKash</option>
+                            <option value="nagad">Nagad</option>
+                        </select>
+                        <label>নম্বর</label>
+                        <input type="text" id="paymentNumber" placeholder="017xxxxxxxx" required>
+                        <button type="submit" class="btn-primary" style="width: 100%;">আবেদন করুন</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- History Section -->
+            <div id="history-section" style="display: none;">
+                <div class="card">
+                    <h3>📜 হিস্ট্রি</h3>
+                    <table id="historyTable">
+                        <thead><tr><th>বিবরণ</th><th>টাকা</th><th>স্ট্যাটাস</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboard-section" style="display: none;">
+                <div class="card">
+                    <h3>🏆 শীর্ষ আয়কারী</h3>
+                    <div id="leaderboardList">
+                        <!-- Leaderboard items will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN DASHBOARD -->
+        <div id="adminView" style="display: none;">
+            <div class="card">
+                <h3>🛠 অ্যাডমিন প্যানেল</h3>
+                <div class="tabs">
+                    <div class="tab active" onclick="showAdminSection('users')">ইউজার ও ডিভাইস</div>
+                    <div class="tab" onclick="showAdminSection('manageTasks')">টাস্ক ম্যানেজ</div>
+                    <div class="tab" onclick="showAdminSection('broadcast')">নোটিশ</div>
+                    <div class="tab" onclick="showAdminSection('requests')">উইথড্র</div>
+                    <div class="tab" onclick="showAdminSection('settings')">সেটিংস</div>
+                </div>
+
+                <!-- User & Device Management -->
+                <div id="admin-users">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h4>ইউজার তালিকা ও ডিভাইস ট্র্যাকিং</h4>
+                        <button onclick="massBanAction()" class="btn-danger" style="font-size:12px; padding:4px 8px;">Mass Ban Fake IDs</button>
+                    </div>
+                    <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">একই ডিভাইস আইডি (Device ID) একাধিক ইউজার ব্যবহার করলে লাল রঙে দেখাবে।</p>
+                    <div id="userListAdmin"></div>
+                </div>
+
+                <!-- Manage Tasks -->
+                <div id="admin-manageTasks" style="display:none;">
+                    <form onsubmit="adminAddTask(event)">
+                        <input type="text" id="newTaskTitle" placeholder="টাস্কের নাম" required>
+                        <input type="text" id="newTaskLink" placeholder="লিংক" required>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="number" id="newTaskReward" placeholder="পুরস্কার" required>
+                            <select id="newTaskType">
+                                <option value="daily">ডেইলি (২৪ঘণ্টা)</option>
+                                <option value="onetime">ওয়ান টাইম</option>
+                                <option value="copy">কপি লিংক</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-success" style="width:100%">+ টাস্ক অ্যাড</button>
+                    </form>
+                </div>
+
+                <!-- Broadcast Notification -->
+                <div id="admin-broadcast" style="display:none;">
+                    <h4>সব ইউজারকে নোটিশ দিন</h4>
+                    <textarea id="broadcastMsg" rows="4" placeholder="নোটিশ লিখুন..."></textarea>
+                    <button onclick="sendBroadcast()" class="btn-primary" style="width:100%; margin-top:5px;">পাঠান</button>
+                </div>
+
+                <!-- Withdraw Requests -->
+                <div id="admin-requests" style="display:none;">
+                    <div id="requestList"></div>
+                </div>
+
+                <!-- Settings & Maintenance -->
+                <div id="admin-settings" style="display:none;">
+                    <div class="card" style="border:1px solid var(--border);">
+                        <h4>🔧 সেটিংস</h4>
+                        
+                        <label style="margin-top:10px; display:block; font-weight:bold;">মেইনটেনেন্স মোড</label>
+                        <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
+                            <button id="maintenanceBtn" onclick="toggleMaintenance()" class="btn-warning">চালু করুন</button>
+                            <small id="maintenanceStatus" style="color:var(--success)">বর্তমানে বন্ধ</small>
+                        </div>
+                        <input type="text" id="maintenanceMsg" placeholder="মেইনটেনেন্সের কারণ লিখুন..." style="margin-top:5px;">
+
+                        <label style="margin-top:20px; display:block; font-weight:bold;">ম্যানুয়াল পেমেন্ট (Edit Balance)</label>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="editUserUid" placeholder="User ID (নমুনা: user_abc)">
+                            <input type="number" id="editAmount" placeholder="Amount (+/-)">
+                        </div>
+                        <button onclick="manualPayment()" class="btn-primary" style="width:100%; margin-top:5px;">ব্যালেন্স আপডেট করুন</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Task Modal -->
+    <div class="modal" id="taskModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; justify-content:center; align-items:center;">
+        <div class="card" style="width:90%; max-width:350px; text-align:center;">
+            <h3 id="modalTitle">Task</h3>
+            <a id="modalLink" href="#" target="_blank" class="btn-primary" style="display:block; text-decoration:none; margin:15px 0;">জয়েন করুন</a>
+            <div id="timerArea" style="display:none;">
+                <h1 id="countdown" style="color:var(--primary)">5</h1>
+            </div>
+            <button id="claimBtn" class="btn-success" style="display:none; width:100%;">টাকা নিন</button>
+            <button onclick="closeModal()" class="btn-outline" style="width:100%; margin-top:10px;">বন্ধ করুন</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toastMsg"></div>
+
+    <script>
+        // --- 1. SYSTEM INIT & DEVICE TRACKING ---
+        
+        // ডিভাইস আইডি জেনারেট (Fingerprinting Simulation)
+        let deviceId = localStorage.getItem('device_id');
+        if (!deviceId) {
+            deviceId = 'dev_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('device_id', deviceId);
+        }
+
+        // বর্তমান ইউজার সিমুলেশন (Auth নেই তাই আমরা ইউজার আইডি সেভ রাখব)
+        let currentUser = localStorage.getItem('current_user_id');
+        if(!currentUser) {
+            currentUser = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('current_user_id', currentUser);
+            registerUserInDB(currentUser);
+        } else {
+            updateUserActivity(currentUser);
+        }
+
+        // --- 2. MOCK DATABASE (LOCALSTORAGE) ---
+
+        const DB = {
+            getData: (k) => JSON.parse(localStorage.getItem(k)) || null,
+            setData: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+            init: function() {
+                if(!this.getData('tasks')) this.setData('tasks', []);
+                if(!this.getData('notifications')) this.setData('notifications', []);
+                if(!this.getData('users')) this.setData('users', {}); 
+                if(!this.getData('withdraws')) this.setData('withdraws', []);
+                if(!this.getData('history')) this.setData('history', []);
+                if(!this.getData('completedTasks')) this.setData('completedTasks', {});
+                if(!this.getData('settings')) this.setData('settings', { maintenanceMode: false, maintenanceMsg: "সার্ভার আপডেট চলছে..." });
+            }
+        };
+        DB.init();
+
+        function registerUserInDB(uid) {
+            let users = DB.getData('users');
+            users[uid] = {
+                name: "User " + uid.substr(-4),
+                balance: 0,
+                deviceId: deviceId,
+                isBanned: false,
+                joinedAt: Date.now()
+            };
+            DB.setData('users', users);
+        }
+
+        function updateUserActivity(uid) {
+            let users = DB.getData('users');
+            if(users[uid]) {
+                // Update last seen or similar logic here if needed
+            }
+        }
+
+        // --- 3. CORE LOGIC ---
+
+        function updateBalance(uid, amount) {
+            let users = DB.getData('users');
+            if(users[uid]) {
+                users[uid].balance = (parseFloat(users[uid].balance) + amount).toFixed(2);
+                DB.setData('users', users);
+                renderDashboard();
+            }
+        }
+
+        function addToHistory(uid, desc, amount, status) {
+            let hist = DB.getData('history');
+            hist.unshift({ uid, desc, amount, status, date: new Date().toLocaleDateString() });
+            DB.setData('history', hist);
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toastMsg');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- 4. UI RENDERING ---
+
+        function renderDashboard() {
+            let users = DB.getData('users');
+            let me = users[currentUser];
+
+            // Maintenance Check
+            const settings = DB.getData('settings');
+            const overlay = document.getElementById('maintenanceOverlay');
+            if(settings.maintenanceMode) {
+                document.getElementById('maintenanceText').innerText = settings.maintenanceMsg;
+                overlay.style.display = 'flex';
+            } else {
+                overlay.style.display = 'none';
+            }
+
+            // ব্যান চেক
+            if(me && me.isBanned) {
+                document.getElementById('warningBanner').style.display = 'block';
+                document.getElementById('warningBanner').innerText = "আপনার একাউন্ট ব্যান করা হয়েছে। অ্যাডমিনের সাথে যোগাযোগ করুন।";
+            } else {
+                document.getElementById('warningBanner').style.display = 'none';
+            }
+
+            if(me) {
+                document.getElementById('userBalance').innerText = me.balance;
+                document.getElementById('profileName').innerText = me.name;
+                document.getElementById('userIdDisplay').innerText = currentUser;
+            }
+
+            // Render Notifications
+            const notifs = DB.getData('notifications');
+            const notifList = document.getElementById('notificationList');
+            const badge = document.getElementById('notifBadge');
+            
+            if(notifs.length > 0) {
+                badge.style.display = 'inline-block';
+                badge.innerText = notifs.length;
+                notifList.innerHTML = notifs.map(n => `
+                    <div class="notif-item">
+                        <div class="notif-icon">🔔</div>
+                        <div class="notif-content">
+                            <h5>${n.title}</h5>
+                            <p>${n.msg}</p>
+                            <small style="color:#aaa">${new Date(n.time).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                badge.style.display = 'none';
+                notifList.innerHTML = '<p style="text-align:center; padding:20px;">কোনো নতুন নোটিশ নেই</p>';
+            }
+
+            // Render Tasks
+            const taskContainer = document.getElementById('taskList');
+            if(me && me.isBanned) {
+                taskContainer.innerHTML = '<p style="text-align:center; color:red; padding:20px;">ব্যান থাকার কারণে টাস্ক করা যাবে না।</p>';
+            } else {
+                const tasks = DB.getData('tasks').filter(t => t.active);
+                const completed = DB.getData('completedTasks');
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+
+                taskContainer.innerHTML = tasks.map(task => {
+                    let isDone = false;
+                    let lastTime = completed[currentUser + '_' + task.id];
+
+                    if(task.type === 'daily' && lastTime) {
+                        if((now - lastTime) < oneDay) isDone = true;
+                    } else if((task.type === 'onetime' || task.type === 'copy') && lastTime) {
+                        isDone = true;
+                    }
+
+                    let btn = isDone 
+                        ? `<button class="btn-outline" disabled>সম্পন্ন</button>`
+                        : (task.type === 'copy' 
+                            ? `<button class="btn-primary" onclick="copyLink(${task.id}, '${task.link}')">কপি লিংক</button>`
+                            : `<button class="btn-primary" onclick="openTask(${task.id})">শুরু করুন</button>`);
+
+                    return `
+                    <div class="task-item">
+                        <div class="task-info">
+                            <h4>${task.title}</h4>
+                            <span>${task.type} | ৳${task.reward}</span>
+                        </div>
+                        ${btn}
+                    </div>`;
+                }).join('');
+            }
+
+            // Render History
+            const myHist = DB.getData('history').filter(h => h.uid === currentUser);
+            document.querySelector('#historyTable tbody').innerHTML = myHist.map(h => `
+                <tr>
+                    <td>${h.desc}</td>
+                    <td>${h.amount}</td>
+                    <td>${h.status}</td>
+                </tr>
+            `).join('');
+
+            // Render Leaderboard
+            renderLeaderboard();
+        }
+
+        // --- NEW: LEADERBOARD LOGIC ---
+        function renderLeaderboard() {
+            const users = DB.getData('users');
+            // Convert object to array and sort by balance (descending)
+            const sortedUsers = Object.values(users).sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
+            
+            const lbList = document.getElementById('leaderboardList');
+            if(sortedUsers.length === 0) {
+                lbList.innerHTML = '<p style="text-align:center; padding:10px;">কোনো তথ্য নেই</p>';
+                return;
+            }
+
+            lbList.innerHTML = sortedUsers.map((u, index) => {
+                // Top 3 styling
+                let rankIcon = index + 1;
+                if(index === 0) rankIcon = '🥇';
+                if(index === 1) rankIcon = '🥈';
+                if(index === 2) rankIcon = '🥉';
+
+                return `
+                <div class="leaderboard-item">
+                    <div class="rank">${rankIcon}</div>
+                    <div class="user-info">
+                        <strong>${u.name}</strong><br>
+                        <small>${u.deviceId}</small>
+                    </div>
+                    <div style="font-weight:bold; color:var(--success)">৳${u.balance}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- 5. ADMIN PANEL LOGIC ---
+
+        function renderAdminPanel() {
+            const users = DB.getData('users');
+            const userList = document.getElementById('userListAdmin');
+            
+            // 1. Device ID Counting
+            let deviceCounts = {};
+            Object.values(users).forEach(u => {
+                deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1;
+            });
+
+            userList.innerHTML = Object.keys(users).map(uid => {
+                let u = users[uid];
+                let isMulti = deviceCounts[u.deviceId] > 1;
+                
+                return `
+                <div class="card" style="border-left: 5px solid ${isMulti ? 'red' : 'green'}; padding:10px; margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${u.name}</strong>
+                        <small>ID: ...${uid.substr(-4)}</small>
+                    </div>
+                    <div style="font-size:12px; color:var(--text-secondary); margin-top:5px;">
+                        Device: ${u.deviceId} <br>
+                        Balance: ৳${u.balance}
+                    </div>
+                    ${isMulti ? '<div style="color:red; font-size:11px; font-weight:bold; margin-top:2px;">⚠️ একাধিক একাউন্ট সনাক্ত!</div>' : ''}
+                    <div style="margin-top:8px; display:flex; gap:5px;">
+                        ${u.isBanned 
+                            ? `<button onclick="toggleBan('${uid}')" class="btn-success" style="padding:4px 8px; font-size:12px;">Unban</button>`
+                            : `<button onclick="toggleBan('${uid}')" class="btn-danger" style="padding:4px 8px; font-size:12px;">Ban</button>`
+                        }
+                         <button onclick="prefillEditBalance('${uid}', ${u.balance})" class="btn-primary" style="padding:4px 8px; font-size:12px;">Edit</button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            // 2. Withdraw Requests
+            const reqs = DB.getData('withdraws').filter(r => r.status === 'pending');
+            document.getElementById('requestList').innerHTML = reqs.length ? reqs.map(r => `
+                <div class="card" style="padding:10px; border:1px solid #ddd;">
+                    <b>${r.method} - ৳${r.amount}</b><br>
+                    Number: ${r.number}<br>
+                    User: ...${r.uid.substr(-4)}<br>
+                    <div style="margin-top:5px;">
+                        <button onclick="approveWithdraw(${r.id}, 'approved')" class="btn-success" style="font-size:12px">Approve</button>
+                        <button onclick="approveWithdraw(${r.id}, 'rejected')" class="btn-danger" style="font-size:12px">Reject</button>
+                    </div>
+                </div>
+            `).join('') : 'কোনো পেন্ডিং রিকোয়েস্ট নেই';
+
+            // 3. Settings Status Update
+            const settings = DB.getData('settings');
+            const maintBtn = document.getElementById('maintenanceBtn');
+            const maintStatus = document.getElementById('maintenanceStatus');
+            if(settings.maintenanceMode) {
+                maintBtn.innerText = "বন্ধ করুন";
+                maintBtn.className = "btn-danger";
+                maintStatus.innerText = "বর্তমানে চালু";
+                maintStatus.style.color = "var(--danger)";
+            } else {
+                maintBtn.innerText = "চালু করুন";
+                maintBtn.className = "btn-warning";
+                maintStatus.innerText = "বর্তমানে বন্ধ";
+                maintStatus.style.color = "var(--success)";
+            }
+        }
+
+        // --- NEW: MASS BAN ---
+        function massBanAction() {
+            if(!confirm("আপনি কি নিশ্চিত? এটি একই ডিভাইসে থাকা সকল ডুপ্লিকেট একাউন্ট ব্যান করে দেবে।")) return;
+
+            let users = DB.getData('users');
+            let deviceCounts = {};
+            
+            // Count devices
+            Object.values(users).forEach(u => {
+                deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1;
+            });
+
+            let bannedCount = 0;
+            // Ban duplicates
+            Object.keys(users).forEach(uid => {
+                if(deviceCounts[users[uid].deviceId] > 1) {
+                    users[uid].isBanned = true;
+                    bannedCount++;
+                }
+            });
+
+            DB.setData('users', users);
+            renderAdminPanel();
+            showToast(`${bannedCount} টি ফেক একাউন্ট ব্যান করা হয়েছে`);
+        }
+
+        // --- NEW: EDIT BALANCE (MANUAL PAYMENT) ---
+        function prefillEditBalance(uid, currentBal) {
+            document.getElementById('editUserUid').value = uid;
+            document.getElementById('editAmount').value = ''; 
+            showToast('ইউজার আইডি সিলেক্ট করা হয়েছে, টাকার পরিমাণ লিখুন (+/-)');
+        }
+
+        function manualPayment() {
+            let uid = document.getElementById('editUserUid').value.trim();
+            let amt = parseFloat(document.getElementById('editAmount').value);
+
+            if(!uid || isNaN(amt)) {
+                showToast('সঠিক ইউজার আইডি এবং টাকার পরিমাণ দিন');
+                return;
+            }
+
+            let users = DB.getData('users');
+            if(users[uid]) {
+                updateBalance(uid, amt);
+                addToHistory(uid, 'Manual Adjustment', amt, 'Admin Update');
+                showToast('ব্যালেন্স আপডেট সফল হয়েছে');
+                document.getElementById('editUserUid').value = '';
+                document.getElementById('editAmount').value = '';
+            } else {
+                showToast('ইউজার পাওয়া যায়নি');
+            }
+        }
+
+        // --- NEW: MAINTENANCE MODE ---
+        function toggleMaintenance() {
+            let settings = DB.getData('settings');
+            let msg = document.getElementById('maintenanceMsg').value;
+            if(msg) settings.maintenanceMsg = msg;
+
+            settings.maintenanceMode = !settings.maintenanceMode;
+            DB.setData('settings', settings);
+            
+            renderAdminPanel();
+            renderDashboard(); // To apply overlay immediately
+            showToast('সেটিংস সেভ হয়েছে');
+        }
+
+        function toggleBan(uid) {
+            let users = DB.getData('users');
+            users[uid].isBanned = !users[uid].isBanned;
+            DB.setData('users', users);
+            renderAdminPanel();
+            showToast('স্ট্যাটাস আপডেট হয়েছে');
+        }
+
+        function sendBroadcast() {
+            const msg = document.getElementById('broadcastMsg').value;
+            if(!msg) return;
+            let notifs = DB.getData('notifications');
+            notifs.unshift({
+                title: "জরুরী নোটিশ",
+                msg: msg,
+                time: Date.now()
+            });
+            DB.setData('notifications', notifs);
+            document.getElementById('broadcastMsg').value = '';
+            showToast('নোটিশ পাঠানো হয়েছে');
+        }
+
+        function adminAddTask(e) {
+            e.preventDefault();
+            const tasks = DB.getData('tasks');
+            tasks.push({
+                id: Date.now(),
+                title: document.getElementById('newTaskTitle').value,
+                link: document.getElementById('newTaskLink').value,
+                reward: parseFloat(document.getElementById('newTaskReward').value),
+                type: document.getElementById('newTaskType').value,
+                active: true
+            });
+            DB.setData('tasks', tasks);
+            showToast('টাস্ক অ্যাড হয়েছে');
+            e.target.reset();
+        }
+
+        function approveWithdraw(rid, status) {
+            let wList = DB.getData('withdraws');
+            let req = wList.find(r => r.id === rid);
+            if(req) {
+                req.status = status;
+                DB.setData('withdraws', wList);
+                addToHistory(req.uid, `Withdraw (${status})`, req.amount, status);
+                renderAdminPanel();
+            }
+        }
+
+        // --- 6. USER ACTIONS ---
+
+        function openTask(id) {
+            let task = DB.getData('tasks').find(t => t.id === id);
+            currentTaskId = id;
+            document.getElementById('modalTitle').innerText = task.title;
+            document.getElementById('modalLink').href = task.link;
+            
+            // Reset Modal UI
+            document.getElementById('modalLink').style.display = 'block';
+            document.getElementById('timerArea').style.display = 'none';
+            document.getElementById('claimBtn').style.display = 'none';
+            
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        document.getElementById('modalLink').onclick = function() {
+            this.style.display = 'none';
+            const timerArea = document.getElementById('timerArea');
+            const countdown = document.getElementById('countdown');
+            timerArea.style.display = 'block';
+            let t = 5;
+            countdown.innerText = t;
+            
+            const iv = setInterval(() => {
+                t--;
+                countdown.innerText = t;
+                if(t<=0) {
+                    clearInterval(iv);
+                    timerArea.style.display = 'none';
+                    document.getElementById('claimBtn').style.display = 'block';
+                }
+            }, 1000);
+        };
+
+        document.getElementById('claimBtn').onclick = function() {
+            completeTask(currentTaskId);
+            closeModal();
+        };
+
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+        function completeTask(id) {
+            let task = DB.getData('tasks').find(t => t.id === id);
+            let completed = DB.getData('completedTasks');
+            
+            completed[currentUser + '_' + id] = Date.now();
+            DB.setData('completedTasks', completed);
+            
+            updateBalance(currentUser, task.reward);
+            addToHistory(currentUser, `Task: ${task.title}`, `+${task.reward}`, 'Success');
+            showToast('টাকা যোগ হয়েছে!');
+            renderDashboard();
+        }
+
+        function copyLink(id, link) {
+            navigator.clipboard.writeText(link).then(() => {
+                completeTask(id);
+            });
+        }
+
+        function handleWithdraw(e) {
+            e.preventDefault();
+            let users = DB.getData('users');
+            let me = users[currentUser];
+            let amount = parseFloat(document.getElementById('withdrawAmount').value);
+
+            if(amount > me.balance) {
+                showToast('পর্যাপ্ত ব্যালেন্স নেই');
+                return;
+            }
+
+            let reqs = DB.getData('withdraws');
+            reqs.push({
+                id: Date.now(),
+                uid: currentUser,
+                amount: amount,
+                method: document.getElementById('paymentMethod').value,
+                number: document.getElementById('paymentNumber').value,
+                status: 'pending'
+            });
+            DB.setData('withdraws', reqs);
+            
+            showToast('রিকোয়েস্ট পাঠানো হয়েছে');
+            document.getElementById('withdrawAmount').value = '';
+        }
+
+        // --- 7. NAVIGATION ---
+
+        function showSection(id) {
+            ['tasks', 'notifications', 'withdraw', 'history', 'leaderboard'].forEach(s => {
+                document.getElementById(s + '-section').style.display = (s === id ? 'block' : 'none');
+            });
+            document.querySelectorAll('#userView .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showAdminSection(id) {
+            ['users', 'manageTasks', 'broadcast', 'requests', 'settings'].forEach(s => {
+                document.getElementById('admin-' + s).style.display = (s === id ? 'block' : 'none');
+            });
+            document.querySelectorAll('#adminView .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            if(id === 'users') renderAdminPanel();
+            if(id === 'settings') renderAdminPanel(); // Refresh settings UI
+        }
+
+        function switchRole() {
+            const u = document.getElementById('userView');
+            const a = document.getElementById('adminView');
+            if(u.style.display === 'none') {
+                u.style.display = 'block'; a.style.display = 'none';
+                renderDashboard();
+            } else {
+                u.style.display = 'none'; a.style.display = 'block';
+                renderAdminPanel();
+            }
+        }
+
+        function toggleTheme() {
+            const th = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', th === 'dark' ? 'light' : 'dark');
+        }
+
+        // Init
+        renderDashboard();
+
+    </script>
+</body>
+</html>
