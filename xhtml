@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeliTask Pro - Updated</title>
+    <title>TeliTask Pro - Summary System</title>
     <style>
-        /* --- CSS Styles --- */
         :root {
             --primary: #0088cc;
             --primary-dark: #006699;
@@ -34,11 +33,9 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 80px; }
         
-        /* Header */
         header { background: var(--surface); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 20px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; }
         
-        /* Buttons */
         button { cursor: pointer; border: none; outline: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
@@ -48,15 +45,12 @@
         
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
         
-        /* Layout */
         .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
         
-        /* Cards */
         .card { background: var(--surface); padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); }
         .balance-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; text-align: center; }
         .balance-amount { font-size: 32px; font-weight: bold; margin: 10px 0; }
         
-        /* Toggle Switch */
         .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -65,12 +59,10 @@
         input:checked + .slider { background-color: var(--success); }
         input:checked + .slider:before { transform: translateX(26px); }
         
-        /* Task List */
         .task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--surface); }
         .task-info h4 { font-size: 15px; margin-bottom: 4px; }
         .task-info span { font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; }
         
-        /* Notifications */
         .notif-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: start; }
         .notif-icon { font-size: 20px; }
         .notif-content h5 { font-size: 14px; margin-bottom: 2px; }
@@ -79,60 +71,37 @@
         .notif-global { background: #e3f2fd; color: #0d47a1; }
         .notif-personal { background: #e8f5e9; color: #1b5e20; }
 
-        /* Tables */
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; }
         
-        /* Tabs */
         .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
         .tab { padding: 6px 14px; cursor: pointer; border-radius: 20px; font-size: 13px; white-space: nowrap; background: rgba(0,0,0,0.05); }
         .tab.active { background: var(--primary); color: white; }
 
-        /* Toast */
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: 0.3s; z-index: 999; pointer-events: none; }
         .toast.show { opacity: 1; bottom: 40px; }
         
-        /* Warning Banner */
         .warning-banner { background: var(--warning); color: #000; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
         
-        /* Maintenance Mode Overlay */
-        #maintenanceOverlay {
-            display: none;
-            position: fixed; top:0; left:0; width:100%; height:100%;
-            background: var(--bg); z-index: 2000;
-            flex-direction: column; justify-content: center; align-items: center; text-align: center;
-            padding: 20px;
-        }
+        #maintenanceOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
 
-        /* Leaderboard Styles */
-        .leaderboard-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; border-bottom: 1px solid var(--border);
-        }
+        .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); }
         .rank { font-weight: bold; width: 30px; color: var(--primary); }
         .user-info { flex-grow: 1; }
 
-        /* VPN Badge */
-        .vpn-badge {
-            background: #ffcccc; color: #d63031;
-            padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold;
-            border: 1px solid #ff7675;
-        }
-        .safe-badge {
-            background: #e1f5fe; color: var(--primary);
-            padding: 2px 6px; border-radius: 4px; font-size: 10px;
-        }
+        .vpn-badge { background: #ffcccc; color: #d63031; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; border: 1px solid #ff7675; }
+        .safe-badge { background: #e1f5fe; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        
+        .tg-summary-box { background: rgba(0,0,0,0.05); border-left: 4px solid var(--primary); padding: 10px; margin-top: 10px; font-family: monospace; font-size: 12px; white-space: pre-wrap; display: none;}
     </style>
 </head>
 <body>
 
-    <!-- Maintenance Mode -->
     <div id="maintenanceOverlay">
         <h1 style="color:var(--primary); margin-bottom:10px;">🛠 মেইনটেনেন্স চলছে</h1>
         <p id="maintenanceText">সার্ভার আপডেট চলছে, অনুগ্রহ করে কিছুক্ষণ পর আসুন।</p>
     </div>
 
-    <!-- Warning Banner -->
     <div id="warningBanner" class="warning-banner"></div>
 
     <header>
@@ -150,11 +119,10 @@
         
         <!-- USER DASHBOARD -->
         <div id="userView">
-            <!-- Profile Header -->
             <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h3 id="profileName">User Name</h3>
-                    <small style="color: var(--text-secondary);">ID: <span id="userIdDisplay">...</span></small>
+                    <small style="color: var(--text-secondary);">TG ID: <span id="userIdDisplay">...</span></small>
                 </div>
                 <div style="text-align: right;">
                     <span id="userVpnStatus" style="font-size: 12px; padding: 4px 8px; border-radius: 4px;">Checking...</span>
@@ -164,9 +132,13 @@
             <div class="card balance-card">
                 <p>মোট ব্যালেন্স</p>
                 <div class="balance-amount">৳ <span id="userBalance">0.00</span></div>
+                <div style="display:flex; justify-content:space-around; font-size:12px; margin-top:10px; border-top:1px solid rgba(255,255,255,0.3); padding-top:10px;">
+                    <div>মোট আয়: ৳<span id="totalEarnedDisplay">0</span></div>
+                    <div>উইথড্র: ৳<span id="totalWithdrawnDisplay">0</span></div>
+                    <div>টাস্ক: <span id="totalTasksDisplay">0</span></div>
+                </div>
             </div>
 
-            <!-- NEW: Reward Toggle -->
             <div class="card switch-container">
                 <div>
                     <strong>অটোমেটিক রিওয়ার্ড</strong>
@@ -178,7 +150,12 @@
                 </label>
             </div>
 
-            <!-- Navigation Tabs -->
+            <!-- Demo: View Summary -->
+            <div class="card" style="padding:10px;">
+                <button onclick="previewTelegramSummary()" class="btn-outline" style="width:100%; font-size:12px;">👁 টেলিগ্রাম গ্রুপ Summary মেসেজ দেখুন</button>
+                <div id="tgSummaryPreview" class="tg-summary-box"></div>
+            </div>
+
             <div class="tabs">
                 <div class="tab active" onclick="showSection('tasks')">টাস্ক</div>
                 <div class="tab" onclick="showSection('notifications')">নোটিশ <span id="notifBadge" style="background:red; color:white; border-radius:50%; padding:0 5px; font-size:10px; display:none">0</span></div>
@@ -187,7 +164,6 @@
                 <div class="tab" onclick="showSection('leaderboard')">লিডারবোর্ড</div>
             </div>
 
-            <!-- Tasks Section -->
             <div id="tasks-section">
                 <div class="card">
                     <h3>📢 উপলব্ধ টাস্ক</h3>
@@ -195,17 +171,13 @@
                 </div>
             </div>
 
-            <!-- Notification Section -->
             <div id="notifications-section" style="display: none;">
                 <div class="card">
                     <h3>🔔 নোটিশ বোর্ড</h3>
-                    <div id="notificationList">
-                        <p style="text-align:center; color: var(--text-secondary);">কোনো নোটিশ নেই</p>
-                    </div>
+                    <div id="notificationList"><p style="text-align:center; color: var(--text-secondary);">কোনো নোটিশ নেই</p></div>
                 </div>
             </div>
 
-            <!-- Withdraw Section -->
             <div id="withdraw-section" style="display: none;">
                 <div class="card">
                     <h3>💸 টাকা উত্তোলন</h3>
@@ -224,7 +196,6 @@
                 </div>
             </div>
 
-            <!-- History Section -->
             <div id="history-section" style="display: none;">
                 <div class="card">
                     <h3>📜 হিস্ট্রি</h3>
@@ -235,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- Leaderboard Section -->
             <div id="leaderboard-section" style="display: none;">
                 <div class="card">
                     <h3>🏆 শীর্ষ আয়কারী</h3>
@@ -256,20 +226,14 @@
                     <div class="tab" onclick="showAdminSection('settings')">সেটিংস</div>
                 </div>
 
-                <!-- User & Device Management -->
                 <div id="admin-users">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <h4>ইউজার তালিকা ও নিরাপত্তা</h4>
                         <button onclick="massBanAction()" class="btn-danger" style="font-size:12px; padding:4px 8px;">Mass Ban Fake IDs</button>
                     </div>
-                    <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">
-                        <span style="color:red">লাল ব্যাজ = VPN সন্দেহ (টাইমজোন/ভাষা মিলছে না)</span> | 
-                        <span style="color:var(--text-secondary)">লাল বর্ডার = ডুপ্লিকেট ডিভাইস</span>
-                    </p>
                     <div id="userListAdmin"></div>
                 </div>
 
-                <!-- Manage Tasks -->
                 <div id="admin-manageTasks" style="display:none;">
                     <form onsubmit="adminAddTask(event)">
                         <input type="text" id="newTaskTitle" placeholder="টাস্কের নাম" required>
@@ -286,30 +250,24 @@
                     </form>
                 </div>
 
-                <!-- Broadcast Notification -->
                 <div id="admin-broadcast" style="display:none;">
                     <h4>📢 সবাইকে নোটিশ দিন (Broadcast)</h4>
                     <textarea id="broadcastMsg" rows="3" placeholder="সবার জন্য নোটিশ লিখুন..."></textarea>
                     <button onclick="sendBroadcast('global')" class="btn-primary" style="width:100%; margin-top:5px;">সবাইকে পাঠান</button>
-                    
                     <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
-                    
                     <h4>👤 নির্দিষ্ট ইউজারকে নোটিশ দিন (Personal)</h4>
-                    <input type="text" id="personalTargetUid" placeholder="User ID (যেমন: user_abc123)">
+                    <input type="text" id="personalTargetUid" placeholder="Telegram ID (যেমন: 123456789)">
                     <textarea id="personalMsg" rows="3" placeholder="ইউজারের জন্য নোটিশ..."></textarea>
                     <button onclick="sendBroadcast('personal')" class="btn-warning" style="width:100%; margin-top:5px;">ওই ইউজারকে পাঠান</button>
                 </div>
 
-                <!-- Withdraw Requests -->
                 <div id="admin-requests" style="display:none;">
                     <div id="requestList"></div>
                 </div>
 
-                <!-- Settings & Maintenance -->
                 <div id="admin-settings" style="display:none;">
                     <div class="card" style="border:1px solid var(--border);">
                         <h4>🔧 সেটিংস</h4>
-                        
                         <label style="margin-top:10px; display:block; font-weight:bold;">মেইনটেনেন্স মোড</label>
                         <div style="display:flex; gap:10px; align-items:center; margin-top:5px;">
                             <button id="maintenanceBtn" onclick="toggleMaintenance()" class="btn-warning">চালু করুন</button>
@@ -319,7 +277,7 @@
 
                         <label style="margin-top:20px; display:block; font-weight:bold;">ম্যানুয়াল পেমেন্ট (Edit Balance)</label>
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="editUserUid" placeholder="User ID (নমুনা: user_abc)">
+                            <input type="text" id="editUserUid" placeholder="Telegram ID">
                             <input type="number" id="editAmount" placeholder="Amount (+/-)">
                         </div>
                         <button onclick="manualPayment()" class="btn-primary" style="width:100%; margin-top:5px;">ব্যালেন্স আপডেট করুন</button>
@@ -329,112 +287,154 @@
         </div>
     </main>
 
-    <!-- Task Modal -->
     <div class="modal" id="taskModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; justify-content:center; align-items:center;">
         <div class="card" style="width:90%; max-width:350px; text-align:center;">
             <h3 id="modalTitle">Task</h3>
             <a id="modalLink" href="#" target="_blank" class="btn-primary" style="display:block; text-decoration:none; margin:15px 0;">জয়েন করুন</a>
-            <div id="timerArea" style="display:none;">
-                <h1 id="countdown" style="color:var(--primary)">5</h1>
-            </div>
+            <div id="timerArea" style="display:none;"><h1 id="countdown" style="color:var(--primary)">5</h1></div>
             <button id="claimBtn" class="btn-success" style="display:none; width:100%;">টাকা নিন</button>
             <button onclick="closeModal()" class="btn-outline" style="width:100%; margin-top:10px;">বন্ধ করুন</button>
         </div>
     </div>
 
-    <!-- Toast -->
     <div class="toast" id="toastMsg"></div>
 
     <script>
-        // --- 1. SYSTEM INIT & VPN DETECTION ---
-
-        // VPN Detection Function
-        function detectVPN() {
-            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; // e.g., "Asia/Dhaka"
-            const language = navigator.language; // e.g., "bn-BD" or "en-US"
-            
-            // বাংলাদেশের জন্য লজিক
-            const isSuspicious = (timeZone !== 'Asia/Dhaka' && !language.startsWith('bn'));
-            
-            return {
-                timeZone: timeZone,
-                language: language,
-                isSuspicious: isSuspicious
-            };
+        // --- 1. TELEGRAM INIT & CORE SETUP ---
+        let tgUser = null;
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            tgUser = Telegram.WebApp.initDataUnsafe?.user;
+        }
+        if (!tgUser) {
+            tgUser = { id: Math.floor(Math.random() * 1000000), first_name: "Demo User" };
         }
 
-        // ডিভাইস আইডি জেনারেট
+        function detectVPN() {
+            const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const language = navigator.language;
+            const isSuspicious = (timeZone !== 'Asia/Dhaka' && !language.startsWith('bn'));
+            return { timeZone, language, isSuspicious };
+        }
+
         let deviceId = localStorage.getItem('device_id');
         if (!deviceId) {
             deviceId = 'dev_' + Math.random().toString(36).substr(2, 9);
             localStorage.setItem('device_id', deviceId);
         }
 
-        // বর্তমান ইউজার সিমুলেশন
-        let currentUser = localStorage.getItem('current_user_id');
-        if(!currentUser) {
-            currentUser = 'user_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('current_user_id', currentUser);
-            registerUserInDB(currentUser);
-        } else {
-            updateUserActivity(currentUser);
-        }
+        let currentUser = String(tgUser.id); 
+        let currentUserName = tgUser.first_name;
 
-        // --- 2. MOCK DATABASE (LOCALSTORAGE) ---
-
+        // --- 2. MOCK DATABASE ---
         const DB = {
             getData: (k) => JSON.parse(localStorage.getItem(k)) || null,
             setData: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
             init: function() {
-                if(!this.getData('tasks')) this.setData('tasks', []);
+                if(!this.getData('tasks')) this.setData('tasks', [
+                    { id: 1, title: 'Join Channel', link: 'https://t.me/example', reward: 5, type: 'onetime', active: true },
+                    { id: 2, title: 'Daily Check-in', link: '#', reward: 1, type: 'daily', active: true },
+                    { id: 3, title: 'Copy Ref Link', link: 'https://t.me/example?start=ref', reward: 2, type: 'copy', active: true }
+                ]);
                 if(!this.getData('notifications')) this.setData('notifications', []);
                 if(!this.getData('users')) this.setData('users', {}); 
                 if(!this.getData('withdraws')) this.setData('withdraws', []);
                 if(!this.getData('history')) this.setData('history', []);
                 if(!this.getData('completedTasks')) this.setData('completedTasks', {});
                 if(!this.getData('settings')) this.setData('settings', { maintenanceMode: false, maintenanceMsg: "সার্ভার আপডেট চলছে..." });
-                // Reward Toggle Setting
                 if(!this.getData('userSettings')) this.setData('userSettings', {});
             }
         };
         DB.init();
 
-        function registerUserInDB(uid) {
+        function registerUserInDB(uid, name) {
             let users = DB.getData('users');
             const vpnInfo = detectVPN();
             
-            users[uid] = {
-                name: "User " + uid.substr(-4),
-                balance: 0,
-                deviceId: deviceId,
-                isBanned: false,
-                joinedAt: Date.now(),
-                vpnInfo: vpnInfo
-            };
-            DB.setData('users', users);
-            
-            // Init user settings
-            let settings = DB.getData('userSettings');
-            if(!settings[uid]) settings[uid] = { autoReward: true };
-            DB.setData('userSettings', settings);
-        }
-
-        function updateUserActivity(uid) {
-            let users = DB.getData('users');
-            if(users[uid]) {
-                const vpnInfo = detectVPN();
+            if (!users[uid]) {
+                users[uid] = {
+                    name: name || "User",
+                    balance: 0,
+                    totalEarned: 0,
+                    totalWithdrawn: 0,
+                    totalTasks: 0,
+                    deviceId: deviceId,
+                    isBanned: false,
+                    joinedAt: Date.now(),
+                    msg_id: null, // Telegram Summary Message ID
+                    vpnInfo: vpnInfo
+                };
+                let settings = DB.getData('userSettings');
+                if(!settings[uid]) settings[uid] = { autoReward: true };
+                DB.setData('userSettings', settings);
+                
+                // Trigger Telegram Bot API to create initial message
+                sendToTelegramBot('newUser', uid, users[uid]);
+            } else {
                 users[uid].vpnInfo = vpnInfo;
-                DB.setData('users', users);
             }
+            DB.setData('users', users);
         }
 
-        // --- 3. CORE LOGIC ---
+        // --- 3. TELEGRAM BOT COMMUNICATION ---
+        function formatSummaryMessage(uid) {
+            let users = DB.getData('users');
+            let u = users[uid];
+            if(!u) return "";
 
-        function updateBalance(uid, amount) {
+            const joinDate = new Date(u.joinedAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+            const lastUpdate = new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+            return `👤 User Name: ${u.name}\n\n🆔 Telegram ID: ${uid}\n\n✅ Total Tasks Completed: ${u.totalTasks}\n\n💵 Total Earned: ৳${u.totalEarned}\n\n💰 Current Balance: ৳${u.balance}\n\n💸 Total Withdrawn: ৳${u.totalWithdrawn}\n\n📅 Join Date: ${joinDate}\n\n🔄 Last Update: ${lastUpdate}`;
+        }
+
+        function sendToTelegramBot(action, uid, userData) {
+            const text = formatSummaryMessage(uid);
+            
+            // --- DEMO LOG ---
+            console.log(`%c--- TELEGRAM BOT API CALL ---`, "color: #0088cc; font-weight:bold;");
+            console.log(`Action: ${action}`);
+            console.log(`User ID: ${uid}`);
+            console.log(`Message ID to Edit: ${userData.msg_id || 'None (Will create new)'}`);
+            console.log(`Generated Text for Group:\n${text}`);
+            console.log(`-----------------------------\n`);
+
+            /* 
+            // --- PRODUCTION CODE (Uncomment & Setup Your Server) ---
+            fetch('https://yourdomain.com/api/updateSummary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, uid, msg_id: userData.msg_id, text })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success' && data.msg_id) {
+                    let users = DB.getData('users');
+                    users[uid].msg_id = data.msg_id; // Save the message ID returned by Telegram Bot
+                    DB.setData('users', users);
+                }
+            });
+            */
+        }
+
+        // --- 4. CORE LOGIC ---
+        function updateBalance(uid, amount, isWithdrawal = false) {
             let users = DB.getData('users');
             if(users[uid]) {
                 users[uid].balance = (parseFloat(users[uid].balance) + amount).toFixed(2);
+                
+                if(isWithdrawal) {
+                    users[uid].totalWithdrawn = (parseFloat(users[uid].totalWithdrawn) + Math.abs(amount)).toFixed(2);
+                } else {
+                    if(amount > 0) {
+                        users[uid].totalEarned = (parseFloat(users[uid].totalEarned) + amount).toFixed(2);
+                        users[uid].totalTasks += 1;
+                    }
+                }
                 DB.setData('users', users);
+                
+                // Trigger Telegram Summary Update
+                sendToTelegramBot('updateUser', uid, users[uid]);
                 renderDashboard();
             }
         }
@@ -452,8 +452,6 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // --- 4. NEW FEATURES LOGIC ---
-
         function toggleRewardSetting() {
             const isChecked = document.getElementById('rewardToggle').checked;
             let settings = DB.getData('userSettings');
@@ -463,13 +461,18 @@
             showToast(isChecked ? 'অটোমেটিক রিওয়ার্ড চালু করা হয়েছে' : 'অটোমেটিক রিওয়ার্ড বন্ধ করা হয়েছে');
         }
 
-        // --- 5. UI RENDERING ---
+        function previewTelegramSummary() {
+            const previewBox = document.getElementById('tgSummaryPreview');
+            const text = formatSummaryMessage(currentUser);
+            previewBox.innerText = text;
+            previewBox.style.display = previewBox.style.display === 'none' ? 'block' : 'none';
+        }
 
+        // --- 5. UI RENDERING ---
         function renderDashboard() {
             let users = DB.getData('users');
             let me = users[currentUser];
 
-            // Maintenance Check
             const settings = DB.getData('settings');
             const overlay = document.getElementById('maintenanceOverlay');
             if(settings.maintenanceMode) {
@@ -479,10 +482,9 @@
                 overlay.style.display = 'none';
             }
 
-            // ব্যান চেক ও VPN স্ট্যাটাস
             if(me && me.isBanned) {
                 document.getElementById('warningBanner').style.display = 'block';
-                document.getElementById('warningBanner').innerText = "আপনার একাউন্ট ব্যান করা হয়েছে। অ্যাডমিনের সাথে যোগাযোগ করুন।";
+                document.getElementById('warningBanner').innerText = "আপনার একাউন্ট ব্যান করা হয়েছে।";
             } else {
                 document.getElementById('warningBanner').style.display = 'none';
             }
@@ -491,29 +493,27 @@
                 document.getElementById('userBalance').innerText = me.balance;
                 document.getElementById('profileName').innerText = me.name;
                 document.getElementById('userIdDisplay').innerText = currentUser;
+                
+                // Updated Stats
+                document.getElementById('totalEarnedDisplay').innerText = me.totalEarned;
+                document.getElementById('totalWithdrawnDisplay').innerText = me.totalWithdrawn;
+                document.getElementById('totalTasksDisplay').innerText = me.totalTasks;
 
-                // User Profile VPN Badge
                 const vpnBadge = document.getElementById('userVpnStatus');
                 if(me.vpnInfo && me.vpnInfo.isSuspicious) {
-                    vpnBadge.className = 'vpn-badge';
-                    vpnBadge.innerText = 'VPN Detected';
+                    vpnBadge.className = 'vpn-badge'; vpnBadge.innerText = 'VPN Detected';
                 } else {
-                    vpnBadge.className = 'safe-badge';
-                    vpnBadge.innerText = 'Device: Safe';
+                    vpnBadge.className = 'safe-badge'; vpnBadge.innerText = 'Device: Safe';
                 }
 
-                // Load Reward Toggle State
                 const userSettings = DB.getData('userSettings');
-                if(userSettings[currentUser] && userSettings[currentUser].autoReward !== undefined) {
+                if(userSettings[currentUser]) {
                     document.getElementById('rewardToggle').checked = userSettings[currentUser].autoReward;
                 }
             }
 
-            // Render Notifications (Global + Personal)
             const notifs = DB.getData('notifications');
             const notifList = document.getElementById('notificationList');
-            
-            // Filter notifications relevant to me: Global OR target === currentUser
             const myNotifs = notifs.filter(n => n.type === 'global' || n.target === currentUser);
 
             if(myNotifs.length > 0) {
@@ -521,30 +521,18 @@
                     <div class="notif-item">
                         <div class="notif-icon">${n.type === 'personal' ? '👤' : '📢'}</div>
                         <div class="notif-content">
-                            <h5>${n.title} 
-                                <span class="notif-badge ${n.type === 'personal' ? 'notif-personal' : 'notif-global'}">
-                                    ${n.type === 'personal' ? 'ব্যক্তিগত' : 'সাধারণ'}
-                                </span>
-                            </h5>
-                            <p>${n.msg}</p>
-                            <small style="color:#aaa">${new Date(n.time).toLocaleDateString()}</small>
+                            <h5>${n.title} <span class="notif-badge ${n.type === 'personal' ? 'notif-personal' : 'notif-global'}">${n.type === 'personal' ? 'ব্যক্তিগত' : 'সাধারণ'}</span></h5>
+                            <p>${n.msg}</p><small style="color:#aaa">${new Date(n.time).toLocaleDateString()}</small>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             } else {
                 notifList.innerHTML = '<p style="text-align:center; padding:20px;">কোনো নতুন নোটিশ নেই</p>';
             }
             
-            // Badge Logic (Show count of unread/unseen notifications logic could go here, for now showing total count)
             const badge = document.getElementById('notifBadge');
-            if(myNotifs.length > 0) {
-                badge.style.display = 'inline-block';
-                badge.innerText = myNotifs.length;
-            } else {
-                badge.style.display = 'none';
-            }
+            badge.style.display = myNotifs.length > 0 ? 'inline-block' : 'none';
+            badge.innerText = myNotifs.length;
 
-            // Render Tasks
             const taskContainer = document.getElementById('taskList');
             if(me && me.isBanned) {
                 taskContainer.innerHTML = '<p style="text-align:center; color:red; padding:20px;">ব্যান থাকার কারণে টাস্ক করা যাবে না।</p>';
@@ -557,12 +545,8 @@
                 taskContainer.innerHTML = tasks.map(task => {
                     let isDone = false;
                     let lastTime = completed[currentUser + '_' + task.id];
-
-                    if(task.type === 'daily' && lastTime) {
-                        if((now - lastTime) < oneDay) isDone = true;
-                    } else if((task.type === 'onetime' || task.type === 'copy') && lastTime) {
-                        isDone = true;
-                    }
+                    if(task.type === 'daily' && lastTime && (now - lastTime) < oneDay) isDone = true;
+                    else if((task.type === 'onetime' || task.type === 'copy') && lastTime) isDone = true;
 
                     let btn = isDone 
                         ? `<button class="btn-outline" disabled>সম্পন্ন</button>`
@@ -570,267 +554,151 @@
                             ? `<button class="btn-primary" onclick="copyLink(${task.id}, '${task.link}')">কপি লিংক</button>`
                             : `<button class="btn-primary" onclick="openTask(${task.id})">শুরু করুন</button>`);
 
-                    return `
-                    <div class="task-item">
-                        <div class="task-info">
-                            <h4>${task.title}</h4>
-                            <span>${task.type} | ৳${task.reward}</span>
-                        </div>
-                        ${btn}
-                    </div>`;
+                    return `<div class="task-item"><div class="task-info"><h4>${task.title}</h4><span>${task.type} | ৳${task.reward}</span></div>${btn}</div>`;
                 }).join('');
             }
 
-            // Render History
             const myHist = DB.getData('history').filter(h => h.uid === currentUser);
-            document.querySelector('#historyTable tbody').innerHTML = myHist.map(h => `
-                <tr>
-                    <td>${h.desc}</td>
-                    <td>${h.amount}</td>
-                    <td>${h.status}</td>
-                </tr>
-            `).join('');
+            document.querySelector('#historyTable tbody').innerHTML = myHist.map(h => `<tr><td>${h.desc}</td><td>${h.amount}</td><td>${h.status}</td></tr>`).join('');
 
-            // Render Leaderboard
             renderLeaderboard();
         }
 
-        // --- LEADERBOARD LOGIC ---
         function renderLeaderboard() {
             const users = DB.getData('users');
-            const sortedUsers = Object.values(users).sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
+            const sortedUsers = Object.entries(users).sort((a, b) => parseFloat(b[1].balance) - parseFloat(a[1].balance));
             
             const lbList = document.getElementById('leaderboardList');
-            if(sortedUsers.length === 0) {
-                lbList.innerHTML = '<p style="text-align:center; padding:10px;">কোনো তথ্য নেই</p>';
-                return;
-            }
+            if(sortedUsers.length === 0) { lbList.innerHTML = '<p style="text-align:center;">কোনো তথ্য নেই</p>'; return; }
 
-            lbList.innerHTML = sortedUsers.map((u, index) => {
+            lbList.innerHTML = sortedUsers.map(([uid, u], index) => {
                 let rankIcon = index + 1;
-                if(index === 0) rankIcon = '🥇';
-                if(index === 1) rankIcon = '🥈';
-                if(index === 2) rankIcon = '🥉';
-
-                return `
-                <div class="leaderboard-item">
-                    <div class="rank">${rankIcon}</div>
-                    <div class="user-info">
-                        <strong>${u.name}</strong><br>
-                        <small>${u.deviceId}</small>
-                    </div>
-                    <div style="font-weight:bold; color:var(--success)">৳${u.balance}</div>
-                </div>`;
+                if(index === 0) rankIcon = '🥇'; if(index === 1) rankIcon = '🥈'; if(index === 2) rankIcon = '🥉';
+                return `<div class="leaderboard-item"><div class="rank">${rankIcon}</div><div class="user-info"><strong>${u.name}</strong><br><small>ID: ${uid}</small></div><div style="font-weight:bold; color:var(--success)">৳${u.balance}</div></div>`;
             }).join('');
         }
 
         // --- 6. ADMIN PANEL LOGIC ---
-
         function renderAdminPanel() {
             const users = DB.getData('users');
             const userList = document.getElementById('userListAdmin');
             
-            // 1. Device ID Counting
             let deviceCounts = {};
-            Object.values(users).forEach(u => {
-                deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1;
-            });
+            Object.values(users).forEach(u => { deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1; });
 
             userList.innerHTML = Object.keys(users).map(uid => {
                 let u = users[uid];
                 let isMulti = deviceCounts[u.deviceId] > 1;
-                let vpnBadge = '';
-                
-                // VPN Badge Logic
-                if(u.vpnInfo && u.vpnInfo.isSuspicious) {
-                    vpnBadge = `<span class="vpn-badge">VPN / Foreign IP</span>`;
-                }
+                let vpnBadge = u.vpnInfo && u.vpnInfo.isSuspicious ? `<span class="vpn-badge">VPN</span>` : '';
 
                 return `
                 <div class="card" style="border-left: 5px solid ${isMulti ? 'red' : 'green'}; padding:10px; margin-bottom:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${u.name}</strong>
-                            <small style="margin-left:5px; color:#888;">ID: ...${uid.substr(-4)}</small>
-                            <br>
-                            ${vpnBadge}
-                        </div>
-                    </div>
+                    <strong>${u.name}</strong> <small style="color:#888;">TG ID: ${uid}</small> ${vpnBadge}
                     <div style="font-size:12px; color:var(--text-secondary); margin-top:5px;">
-                        Device: ${u.deviceId} <br>
-                        Timezone: ${u.vpnInfo ? u.vpnInfo.timeZone : 'N/A'} <br>
-                        Balance: ৳${u.balance}
+                        Balance: ৳${u.balance} | Earned: ৳${u.totalEarned} | Withdrawn: ৳${u.totalWithdrawn} <br>
+                        TG Msg ID: ${u.msg_id ? '<span style="color:var(--success)">'+u.msg_id+'</span>' : '<span style="color:red">N/A</span>'}
                     </div>
-                    ${isMulti ? '<div style="color:red; font-size:11px; font-weight:bold; margin-top:2px;">⚠️ একাধিক একাউন্ট সনাক্ত!</div>' : ''}
+                    ${isMulti ? '<div style="color:red; font-size:11px; font-weight:bold;">⚠️ ডুপ্লিকেট ডিভাইস!</div>' : ''}
                     <div style="margin-top:8px; display:flex; gap:5px;">
-                        ${u.isBanned 
-                            ? `<button onclick="toggleBan('${uid}')" class="btn-success" style="padding:4px 8px; font-size:12px;">Unban</button>`
-                            : `<button onclick="toggleBan('${uid}')" class="btn-danger" style="padding:4px 8px; font-size:12px;">Ban</button>`
-                        }
-                         <button onclick="prefillEditBalance('${uid}', ${u.balance})" class="btn-primary" style="padding:4px 8px; font-size:12px;">Edit</button>
+                        ${u.isBanned ? `<button onclick="toggleBan('${uid}')" class="btn-success" style="padding:4px 8px; font-size:12px;">Unban</button>` : `<button onclick="toggleBan('${uid}')" class="btn-danger" style="padding:4px 8px; font-size:12px;">Ban</button>`}
+                        <button onclick="prefillEditBalance('${uid}')" class="btn-primary" style="padding:4px 8px; font-size:12px;">Edit</button>
                     </div>
                 </div>`;
             }).join('');
 
-            // 2. Withdraw Requests
             const reqs = DB.getData('withdraws').filter(r => r.status === 'pending');
             document.getElementById('requestList').innerHTML = reqs.length ? reqs.map(r => `
                 <div class="card" style="padding:10px; border:1px solid #ddd;">
-                    <b>${r.method} - ৳${r.amount}</b><br>
-                    Number: ${r.number}<br>
-                    User: ...${r.uid.substr(-4)}<br>
+                    <b>${r.method} - ৳${r.amount}</b><br>Number: ${r.number}<br>User TG ID: ${r.uid}
                     <div style="margin-top:5px;">
                         <button onclick="approveWithdraw(${r.id}, 'approved')" class="btn-success" style="font-size:12px">Approve</button>
                         <button onclick="approveWithdraw(${r.id}, 'rejected')" class="btn-danger" style="font-size:12px">Reject</button>
                     </div>
-                </div>
-            `).join('') : 'কোনো পেন্ডিং রিকোয়েস্ট নেই';
+                </div>`).join('') : 'কোনো পেন্ডিং রিকোয়েস্ট নেই';
 
-            // 3. Settings Status Update
+            const settings = DB.getData('settings');
             const maintBtn = document.getElementById('maintenanceBtn');
             const maintStatus = document.getElementById('maintenanceStatus');
             if(settings.maintenanceMode) {
-                maintBtn.innerText = "বন্ধ করুন";
-                maintBtn.className = "btn-danger";
-                maintStatus.innerText = "বর্তমানে চালু";
-                maintStatus.style.color = "var(--danger)";
+                maintBtn.innerText = "বন্ধ করুন"; maintBtn.className = "btn-danger"; maintStatus.innerText = "চালু"; maintStatus.style.color = "var(--danger)";
             } else {
-                maintBtn.innerText = "চালু করুন";
-                maintBtn.className = "btn-warning";
-                maintStatus.innerText = "বর্তমানে বন্ধ";
-                maintStatus.style.color = "var(--success)";
+                maintBtn.innerText = "চালু করুন"; maintBtn.className = "btn-warning"; maintStatus.innerText = "বন্ধ"; maintStatus.style.color = "var(--success)";
             }
         }
 
         function massBanAction() {
-            if(!confirm("আপনি কি নিশ্চিত? এটি একই ডিভাইসে থাকা সকল ডুপ্লিকেট একাউন্ট ব্যান করে দেবে।")) return;
-
+            if(!confirm("ডুপ্লিকেট ডিভাইসের সব একাউন্ট ব্যান করবেন?")) return;
             let users = DB.getData('users');
             let deviceCounts = {};
-            Object.values(users).forEach(u => {
-                deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1;
-            });
-
-            let bannedCount = 0;
-            Object.keys(users).forEach(uid => {
-                if(deviceCounts[users[uid].deviceId] > 1) {
-                    users[uid].isBanned = true;
-                    bannedCount++;
-                }
-            });
-
+            Object.values(users).forEach(u => { deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1; });
+            let count = 0;
+            Object.keys(users).forEach(uid => { if(deviceCounts[users[uid].deviceId] > 1) { users[uid].isBanned = true; count++; }});
             DB.setData('users', users);
             renderAdminPanel();
-            showToast(`${bannedCount} টি ফেক একাউন্ট ব্যান করা হয়েছে`);
+            showToast(`${count} টি ফেক একাউন্ট ব্যান করা হয়েছে`);
         }
 
-        function prefillEditBalance(uid, currentBal) {
+        function prefillEditBalance(uid) {
             document.getElementById('editUserUid').value = uid;
             document.getElementById('editAmount').value = ''; 
-            showToast('ইউজার আইডি সিলেক্ট করা হয়েছে, টাকার পরিমাণ লিখুন (+/-)');
+            showToast('ইউজার আইডি সিলেক্ট করা হয়েছে, টাকার পরিমাণ লিখুন');
         }
 
         function manualPayment() {
             let uid = document.getElementById('editUserUid').value.trim();
             let amt = parseFloat(document.getElementById('editAmount').value);
-
-            if(!uid || isNaN(amt)) {
-                showToast('সঠিক ইউজার আইডি এবং টাকার পরিমাণ দিন');
-                return;
-            }
-
+            if(!uid || isNaN(amt)) { showToast('সঠিক তথ্য দিন'); return; }
             let users = DB.getData('users');
             if(users[uid]) {
-                updateBalance(uid, amt);
+                let isWithdrawal = amt < 0;
+                updateBalance(uid, amt, isWithdrawal);
                 addToHistory(uid, 'Manual Adjustment', amt, 'Admin Update');
-                showToast('ব্যালেন্স আপডেট সফল হয়েছে');
+                showToast('ব্যালেন্স আপডেট হয়েছে');
                 document.getElementById('editUserUid').value = '';
                 document.getElementById('editAmount').value = '';
-            } else {
-                showToast('ইউজার পাওয়া যায়নি');
-            }
+            } else { showToast('ইউজার পাওয়া যায়নি'); }
         }
 
         function toggleMaintenance() {
             let settings = DB.getData('settings');
             let msg = document.getElementById('maintenanceMsg').value;
             if(msg) settings.maintenanceMsg = msg;
-
             settings.maintenanceMode = !settings.maintenanceMode;
             DB.setData('settings', settings);
-            
-            renderAdminPanel();
-            renderDashboard();
-            showToast('সেটিংস সেভ হয়েছে');
+            renderAdminPanel(); renderDashboard();
         }
 
         function toggleBan(uid) {
             let users = DB.getData('users');
             users[uid].isBanned = !users[uid].isBanned;
             DB.setData('users', users);
+            sendToTelegramBot('updateUser', uid, users[uid]);
             renderAdminPanel();
-            showToast('স্ট্যাটাস আপডেট হয়েছে');
         }
 
         function sendBroadcast(type) {
             let notifs = DB.getData('notifications');
-            
             if(type === 'global') {
-                const msg = document.getElementById('broadcastMsg').value;
-                if(!msg) return;
-                notifs.unshift({
-                    type: 'global',
-                    title: "সবার জন্য নোটিশ",
-                    msg: msg,
-                    time: Date.now()
-                });
+                const msg = document.getElementById('broadcastMsg').value; if(!msg) return;
+                notifs.unshift({ type: 'global', title: "সবার জন্য নোটিশ", msg, time: Date.now() });
                 document.getElementById('broadcastMsg').value = '';
                 showToast('সবাইকে নোটিশ পাঠানো হয়েছে');
-            } else if (type === 'personal') {
+            } else {
                 const target = document.getElementById('personalTargetUid').value.trim();
                 const msg = document.getElementById('personalMsg').value;
-                
-                if(!target || !msg) {
-                    showToast('User ID এবং নোটিশ লিখুন');
-                    return;
-                }
-                
-                // Check if user exists
-                let users = DB.getData('users');
-                if(!users[target]) {
-                    showToast('ইউজার পাওয়া যায়নি! ID চেক করুন।');
-                    return;
-                }
-
-                notifs.unshift({
-                    type: 'personal',
-                    target: target,
-                    title: "ব্যক্তিগত নোটিশ",
-                    msg: msg,
-                    time: Date.now()
-                });
-                document.getElementById('personalMsg').value = '';
-                document.getElementById('personalTargetUid').value = '';
+                if(!target || !msg) { showToast('তথ্য দিন'); return; }
+                notifs.unshift({ type: 'personal', target, title: "ব্যক্তিগত নোটিশ", msg, time: Date.now() });
+                document.getElementById('personalMsg').value = ''; document.getElementById('personalTargetUid').value = '';
                 showToast('ব্যক্তিগত নোটিশ পাঠানো হয়েছে');
             }
-            
-            DB.setData('notifications', notifs);
+            DB.setData('notifications', notifs); renderDashboard();
         }
 
         function adminAddTask(e) {
             e.preventDefault();
             const tasks = DB.getData('tasks');
-            tasks.push({
-                id: Date.now(),
-                title: document.getElementById('newTaskTitle').value,
-                link: document.getElementById('newTaskLink').value,
-                reward: parseFloat(document.getElementById('newTaskReward').value),
-                type: document.getElementById('newTaskType').value,
-                active: true
-            });
-            DB.setData('tasks', tasks);
-            showToast('টাস্ক অ্যড হয়েছে');
-            e.target.reset();
+            tasks.push({ id: Date.now(), title: document.getElementById('newTaskTitle').value, link: document.getElementById('newTaskLink').value, reward: parseFloat(document.getElementById('newTaskReward').value), type: document.getElementById('newTaskType').value, active: true });
+            DB.setData('tasks', tasks); showToast('টাস্ক অ্যাড হয়েছে'); e.target.reset(); renderDashboard();
         }
 
         function approveWithdraw(rid, status) {
@@ -840,23 +708,25 @@
                 req.status = status;
                 DB.setData('withdraws', wList);
                 addToHistory(req.uid, `Withdraw (${status})`, req.amount, status);
+                if(status === 'approved') {
+                    // Deduct balance and mark as withdrawal for Summary System
+                    updateBalance(req.uid, -req.amount, true); 
+                }
                 renderAdminPanel();
             }
         }
 
         // --- 7. USER ACTIONS ---
+        let currentTaskId = null;
 
         function openTask(id) {
             let task = DB.getData('tasks').find(t => t.id === id);
             currentTaskId = id;
             document.getElementById('modalTitle').innerText = task.title;
             document.getElementById('modalLink').href = task.link;
-            
-            // Reset Modal UI
             document.getElementById('modalLink').style.display = 'block';
             document.getElementById('timerArea').style.display = 'none';
             document.getElementById('claimBtn').style.display = 'none';
-            
             document.getElementById('taskModal').style.display = 'flex';
         }
 
@@ -865,17 +735,10 @@
             const timerArea = document.getElementById('timerArea');
             const countdown = document.getElementById('countdown');
             timerArea.style.display = 'block';
-            let t = 5;
-            countdown.innerText = t;
-            
+            let t = 5; countdown.innerText = t;
             const iv = setInterval(() => {
-                t--;
-                countdown.innerText = t;
-                if(t<=0) {
-                    clearInterval(iv);
-                    timerArea.style.display = 'none';
-                    document.getElementById('claimBtn').style.display = 'block';
-                }
+                t--; countdown.innerText = t;
+                if(t<=0) { clearInterval(iv); timerArea.style.display = 'none'; document.getElementById('claimBtn').style.display = 'block'; }
             }, 1000);
         };
 
@@ -884,32 +747,26 @@
             closeModal();
         };
 
-        function closeModal() {
-            document.getElementById('taskModal').style.display = 'none';
-        }
+        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
 
         function completeTask(id) {
             let task = DB.getData('tasks').find(t => t.id === id);
             let completed = DB.getData('completedTasks');
-            
             completed[currentUser + '_' + id] = Date.now();
             DB.setData('completedTasks', completed);
             
-            updateBalance(currentUser, task.reward);
+            updateBalance(currentUser, task.reward, false); // isWithdrawal = false
             addToHistory(currentUser, `Task: ${task.title}`, `+${task.reward}`, 'Success');
             showToast('টাকা যোগ হয়েছে!');
-            renderDashboard();
         }
 
         function copyLink(id, link) {
             navigator.clipboard.writeText(link).then(() => {
                 const userSettings = DB.getData('userSettings');
                 const autoReward = userSettings[currentUser] ? userSettings[currentUser].autoReward : true;
-
                 if(autoReward) {
-                    completeTask(id); // Add money
+                    completeTask(id);
                 } else {
-                    // Mark as done without money
                     let completed = DB.getData('completedTasks');
                     completed[currentUser + '_' + id] = Date.now();
                     DB.setData('completedTasks', completed);
@@ -925,64 +782,42 @@
             let me = users[currentUser];
             let amount = parseFloat(document.getElementById('withdrawAmount').value);
 
-            if(amount > me.balance) {
-                showToast('পর্যাপ্ত ব্যালেন্স নেই');
-                return;
-            }
+            if(amount > me.balance) { showToast('পর্যাপ্ত ব্যালেন্স নেই'); return; }
 
             let reqs = DB.getData('withdraws');
-            reqs.push({
-                id: Date.now(),
-                uid: currentUser,
-                amount: amount,
-                method: document.getElementById('paymentMethod').value,
-                number: document.getElementById('paymentNumber').value,
-                status: 'pending'
-            });
+            reqs.push({ id: Date.now(), uid: currentUser, amount, method: document.getElementById('paymentMethod').value, number: document.getElementById('paymentNumber').value, status: 'pending' });
             DB.setData('withdraws', reqs);
-            
             showToast('রিকোয়েস্ট পাঠানো হয়েছে');
             document.getElementById('withdrawAmount').value = '';
         }
 
         // --- 8. NAVIGATION ---
-
         function showSection(id) {
-            ['tasks', 'notifications', 'withdraw', 'history', 'leaderboard'].forEach(s => {
-                document.getElementById(s + '-section').style.display = (s === id ? 'block' : 'none');
-            });
+            ['tasks', 'notifications', 'withdraw', 'history', 'leaderboard'].forEach(s => { document.getElementById(s + '-section').style.display = (s === id ? 'block' : 'none'); });
             document.querySelectorAll('#userView .tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
         }
 
         function showAdminSection(id) {
-            ['users', 'manageTasks', 'broadcast', 'requests', 'settings'].forEach(s => {
-                document.getElementById('admin-' + s).style.display = (s === id ? 'block' : 'none');
-            });
+            ['users', 'manageTasks', 'broadcast', 'requests', 'settings'].forEach(s => { document.getElementById('admin-' + s).style.display = (s === id ? 'block' : 'none'); });
             document.querySelectorAll('#adminView .tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
-            if(id === 'users') renderAdminPanel();
-            if(id === 'settings') renderAdminPanel();
+            if(id === 'users' || id === 'settings') renderAdminPanel();
         }
 
         function switchRole() {
             const u = document.getElementById('userView');
             const a = document.getElementById('adminView');
-            if(u.style.display === 'none') {
-                u.style.display = 'block'; a.style.display = 'none';
-                renderDashboard();
-            } else {
-                u.style.display = 'none'; a.style.display = 'block';
-                renderAdminPanel();
-            }
+            if(u.style.display === 'none') { u.style.display = 'block'; a.style.display = 'none'; renderDashboard(); } 
+            else { u.style.display = 'none'; a.style.display = 'block'; renderAdminPanel(); }
         }
 
         function toggleTheme() {
-            const th = document.documentElement.getAttribute('data-theme');
-            document.documentElement.setAttribute('data-theme', th === 'dark' ? 'light' : 'dark');
+            document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        // Init
+        // Initialize System
+        registerUserInDB(currentUser, currentUserName);
         renderDashboard();
     </script>
 </body>
