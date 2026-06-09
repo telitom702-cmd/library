@@ -1,1 +1,350 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeliTask Pro</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --primary: #0088cc; --primary-dark: #006699; --bg: #f0f2f5; --surface: #ffffff; --text: #1c1e21; --text-secondary: #65676b; --success: #31a24c; --danger: #fa383e; --warning: #ffc107; --border: #ddd; --shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        [data-theme="dark"] { --primary: #5eb3f3; --primary-dark: #3b89c6; --bg: #18191a; --surface: #242526; --text: #e4e6eb; --text-secondary: #b0b3b8; --border: #3e4042; --shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); transition: 0.3s; padding-bottom: 80px; }
+        header { background: var(--surface); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 20px; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        button { cursor: pointer; border: none; outline: none; padding: 8px 14px; border-radius: 6px; font-weight: 600; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+        .container { max-width: 800px; margin: 20px auto; padding: 0 15px; }
+        .card { background: var(--surface); padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: var(--shadow); }
+        .balance-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; text-align: center; }
+        .balance-amount { font-size: 32px; font-weight: bold; margin: 10px 0; }
+        .switch-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(26px); }
+        .task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; background: var(--surface); }
+        .task-info h4 { font-size: 15px; margin-bottom: 4px; }
+        .task-info span { font-size: 11px; color: var(--text-secondary); background: rgba(0,0,0,0.05); padding: 2px 6px; border-radius: 4px; }
+        .notif-item { padding: 10px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: start; }
+        .notif-icon { font-size: 20px; }
+        .notif-content h5 { font-size: 14px; margin-bottom: 2px; }
+        .notif-content p { font-size: 12px; color: var(--text-secondary); }
+        .notif-badge { font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
+        .notif-global { background: #e3f2fd; color: #0d47a1; }
+        .notif-personal { background: #e8f5e9; color: #1b5e20; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 8px; overflow-x: auto; }
+        .tab { padding: 6px 14px; cursor: pointer; border-radius: 20px; font-size: 13px; white-space: nowrap; background: rgba(0,0,0,0.05); }
+        .tab.active { background: var(--primary); color: white; }
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: 0.3s; z-index: 999; pointer-events: none; }
+        .toast.show { opacity: 1; bottom: 40px; }
+        .warning-banner { background: var(--danger); color: white; padding: 10px; text-align: center; font-size: 13px; font-weight: bold; display: none; }
+        #maintenanceOverlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+        .leaderboard-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--border); }
+        .rank { font-weight: bold; width: 30px; color: var(--primary); }
+        .user-info { flex-grow: 1; }
+        .vpn-badge { background: #ffcccc; color: #d63031; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .safe-badge { background: #e1f5fe; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        .reward-off-badge { background: #ffebee; color: #c62828; font-size: 12px; padding: 5px 10px; border-radius: 6px; text-align: center; margin-bottom: 10px; font-weight: bold; }
+        .modal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:200; display:none; justify-content:center; align-items:center; }
+        .modal-content { width:90%; max-width:350px; text-align:center; }
+    </style>
+</head>
+<body>
 
+    <div id="maintenanceOverlay">
+        <h1 style="color:var(--primary); margin-bottom:10px;">🛠 মেইনটেনেন্স চলছে</h1>
+        <p id="maintenanceText">সার্ভার আপডেট চলছে...</p>
+    </div>
+    <div id="warningBanner" class="warning-banner"></div>
+
+    <header>
+        <div class="logo">TeliTask</div>
+        <div class="user-controls">
+            <button class="btn-outline" onclick="toggleTheme()">🌓</button>
+            <button class="btn-outline" onclick="switchRole()" id="roleBtn" style="display:none;">Admin</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="userView">
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div><h3 id="profileName">User Name</h3><small style="color: var(--text-secondary);">@<span id="userUsername">...</span></small></div>
+                <div><span id="userVpnStatus" style="font-size: 12px; padding: 4px 8px; border-radius: 4px;">Checking...</span></div>
+            </div>
+            <div class="card balance-card"><p>মোট ব্যালেন্স</p><div class="balance-amount">৳ <span id="userBalance">0.00</span></div></div>
+            <div class="card switch-container">
+                <div><strong>অটোমেটিক রিওয়ার্ড</strong><p style="font-size:11px; color:var(--text-secondary);">কপি লিংক টাস্কে অটো টাকা নিতে চান?</p></div>
+                <label class="switch"><input type="checkbox" id="rewardToggle" checked onchange="toggleRewardSetting()"><span class="slider"></span></label>
+            </div>
+            <div class="tabs">
+                <div class="tab active" onclick="showSection('tasks')">টাস্ক</div>
+                <div class="tab" onclick="showSection('notifications')">নোটিশ <span id="notifBadge" style="background:red; color:white; border-radius:50%; padding:0 5px; font-size:10px; display:none">0</span></div>
+                <div class="tab" onclick="showSection('withdraw')">উত্তোলন</div>
+                <div class="tab" onclick="showSection('leaderboard')">লিডারবোর্ড</div>
+            </div>
+            <div id="tasks-section">
+                <div id="rewardOffWarning" class="reward-off-badge" style="display:none;">⚠️ সব টাস্কের রিওয়ার্ড বন্ধ আছে!</div>
+                <div class="card"><h3>📢 উপলব্ধ টাস্ক</h3><div id="taskList"></div></div>
+            </div>
+            <div id="notifications-section" style="display: none;"><div class="card"><h3>🔔 নোটিশ বোর্ড</h3><div id="notificationList"></div></div></div>
+            <div id="withdraw-section" style="display: none;">
+                <div class="card">
+                    <h3>💸 টাকা উত্তোলন</h3>
+                    <form onsubmit="handleWithdraw(event)">
+                        <label>পরিমাণ (৳)</label><input type="number" id="withdrawAmount" placeholder="মিনিমাম ৫০" min="50" required>
+                        <label>পেমেন্ট</label><select id="paymentMethod"><option value="bkash">bKash</option><option value="nagad">Nagad</option></select>
+                        <label>নম্বর</label><input type="text" id="paymentNumber" placeholder="017xxxxxxxx" required>
+                        <button type="submit" class="btn-primary" style="width: 100%;">আবেদন করুন</button>
+                    </form>
+                </div>
+            </div>
+            <div id="leaderboard-section" style="display: none;"><div class="card"><h3>🏆 শীর্ষ আয়কারী</h3><div id="leaderboardList"></div></div></div>
+        </div>
+
+        <div id="adminView" style="display: none;">
+            <div class="card">
+                <h3>🛠 অ্যাডমিন প্যানেল</h3>
+                <div class="tabs">
+                    <div class="tab active" onclick="showAdminSection('users')">ইউজার</div>
+                    <div class="tab" onclick="showAdminSection('manageTasks')">টাস্ক</div>
+                    <div class="tab" onclick="showAdminSection('broadcast')">নোটিশ</div>
+                    <div class="tab" onclick="showAdminSection('requests')">উইথড্র</div>
+                    <div class="tab" onclick="showAdminSection('settings')">সেটিংস</div>
+                </div>
+                <div id="admin-users"><h4>ইউজার তালিকা</h4><div id="userListAdmin" style="margin-top:10px"></div></div>
+                <div id="admin-manageTasks" style="display:none;">
+                    <h4>➕ নতুন টাস্ক</h4>
+                    <form onsubmit="adminAddTask(event)">
+                        <input type="text" id="newTaskTitle" placeholder="টাস্কের নাম" required>
+                        <input type="text" id="newTaskLink" placeholder="লিংক" required>
+                        <div style="display: flex; gap: 10px;"><input type="number" id="newTaskReward" placeholder="পুরস্কার" required><select id="newTaskType"><option value="daily">ডেইলি</option><option value="onetime">ওয়ান টাইম</option><option value="copy">কপি</option></select></div>
+                        <button type="submit" class="btn-success" style="width:100%">+ টাস্ক অ্যাড</button>
+                    </form><hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border);">
+                    <h4>📋 বর্তমান টাস্কসমূহ</h4><div id="adminTaskList"></div>
+                </div>
+                <div id="admin-broadcast" style="display:none;">
+                    <h4>📢 সবাইকে নোটিশ</h4><textarea id="broadcastMsg" rows="3" placeholder="সবার জন্য নোটিশ..."></textarea>
+                    <button onclick="sendBroadcast('global')" class="btn-primary" style="width:100%; margin-top:5px;">সবাইকে পাঠান</button><hr style="margin: 15px 0; border: 0; border-top: 1px solid var(--border);">
+                    <h4>👤 নির্দিষ্ট ইউজারকে নোটিশ</h4><input type="text" id="personalTargetUid" placeholder="User Telegram ID"><textarea id="personalMsg" rows="3" placeholder="ইউজারের জন্য নোটিশ..."></textarea>
+                    <button onclick="sendBroadcast('personal')" class="btn-warning" style="width:100%; margin-top:5px;">পাঠান</button>
+                </div>
+                <div id="admin-requests" style="display:none;"><div id="requestList"></div></div>
+                <div id="admin-settings" style="display:none;">
+                    <h4>🔧 সেটিংস</h4>
+                    <label style="margin-top:10px; display:block; font-weight:bold;">মেইনটেনেন্স মোড</label>
+                    <div style="display:flex; gap:10px; align-items:center; margin-top:5px;"><button id="maintenanceBtn" onclick="toggleMaintenance()" class="btn-warning">চালু করুন</button><small id="maintenanceStatus" style="color:var(--success)">বন্ধ</small></div>
+                    <input type="text" id="maintenanceMsg" placeholder="মেইনটেনেন্সের কারণ..." style="margin-top:5px;">
+                    <label style="margin-top:20px; display:block; font-weight:bold;">সব টাস্কের রেওয়ার্ড অন/অফ</label>
+                    <div class="switch-container" style="margin-top:10px;"><p style="font-size:11px; color:var(--text-secondary);">রেওয়ার্ড বন্ধ করলে কেউ টাকা পাবে না।</p><label class="switch"><input type="checkbox" id="globalRewardToggle" checked onchange="toggleGlobalReward()"><span class="slider"></span></label></div>
+                    <label style="margin-top:20px; display:block; font-weight:bold;">ম্যানুয়াল পেমেন্ট</label>
+                    <div style="display:flex; gap:10px;"><input type="text" id="editUserUid" placeholder="TG ID"><input type="number" id="editAmount" placeholder="Amount (+/-)"></div>
+                    <button onclick="manualPayment()" class="btn-primary" style="width:100%; margin-top:5px;">ব্যালেন্স আপডেট</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal" id="taskModal">
+        <div class="card modal-content">
+            <h3 id="modalTitle">Task</h3>
+            <a id="modalLink" href="#" target="_blank" class="btn-primary" style="display:block; text-decoration:none; margin:15px 0;">জয়েন করুন</a>
+            <div id="timerArea" style="display:none;"><h1 id="countdown" style="color:var(--primary)">5</h1></div>
+            <button id="claimBtn" class="btn-success" style="display:none; width:100%;">টাকা নিন</button>
+            <button onclick="closeModal()" class="btn-outline" style="width:100%; margin-top:10px;">বন্ধ করুন</button>
+        </div>
+    </div>
+    <div class="toast" id="toastMsg"></div>
+
+    <script>
+        const API_URL = window.location.origin + '/api'; 
+        let currentUser = null;
+        let isAdminUser = false;
+
+        const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            currentUser = String(tg.initDataUnsafe.user.id);
+            // অটো ওপেন এবং ফুল স্ক্রিন কোড
+            tg.ready(); 
+            tg.expand(); 
+            tg.enableClosingConfirmation();
+        } else {
+            // বট ছাড়া ব্রাউজারে টেস্ট করার জন্য (লাইভ সার্ভারে দেওয়ার সময় এই লাইনটি মুছে দিবেন)
+            currentUser = "8248792819"; 
+        }
+
+        function detectVPN() { const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; const language = navigator.language; return { timeZone, language, isSuspicious: (timeZone !== 'Asia/Dhaka' && !language.startsWith('bn')) }; }
+        function showToast(msg) { const t = document.getElementById('toastMsg'); t.innerText = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+
+        async function initApp() {
+            if (!currentUser) {
+                document.body.innerHTML = '<div style="text-align:center; padding:50px; color:red;"><h1>Access Denied</h1><p>এই ওয়েবসাইটটি শুধুমাত্র টেলিগ্রাম বট থেকে ব্যবহার করা যাবে।</p></div>';
+                return;
+            }
+            try {
+                const vpnInfo = detectVPN();
+                let name = "User", username = "N/A";
+                if(tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    name = (tg.initDataUnsafe.user.first_name || '') + ' ' + (tg.initDataUnsafe.user.last_name || '');
+                    username = tg.initDataUnsafe.user.username || 'N/A';
+                }
+
+                await fetch(`${API_URL}/register`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ uid: currentUser, name: name.trim(), username, deviceId: 'tg_' + currentUser, vpnInfo }) 
+                });
+
+                const adminRes = await fetch(`${API_URL}/check-admin/${currentUser}`); const adminData = await adminRes.json();
+                if(adminData.isAdmin) { isAdminUser = true; document.getElementById('roleBtn').style.display = 'inline-block'; }
+                renderDashboard();
+            } catch (error) { showToast("সার্ভার সংযোগ ব্যর্থ!"); }
+        }
+
+        async function renderDashboard() {
+            const userRes = await fetch(`${API_URL}/user/${currentUser}`); const me = await userRes.json(); if(!me) return;
+            document.getElementById('userBalance').innerText = me.balance; 
+            document.getElementById('profileName').innerText = me.name; 
+            document.getElementById('userUsername').innerText = me.username || me.uid;
+            
+            const vpnBadge = document.getElementById('userVpnStatus');
+            if(me.vpnInfo && me.vpnInfo.isSuspicious) { vpnBadge.className = 'vpn-badge'; vpnBadge.innerText = 'VPN'; } else { vpnBadge.className = 'safe-badge'; vpnBadge.innerText = 'Safe'; }
+            if(me.isBanned) { document.getElementById('warningBanner').style.display = 'block'; } else { document.getElementById('warningBanner').style.display = 'none'; }
+            if(me.settings && me.settings.autoReward !== undefined) { document.getElementById('rewardToggle').checked = me.settings.autoReward; }
+
+            const settingsRes = await fetch(`${API_URL}/settings`); const settingsData = await settingsRes.json();
+            if(settingsData) {
+                if(settingsData.maintenanceMode && !isAdminUser) { document.getElementById('maintenanceText').innerText = settingsData.maintenanceMsg; document.getElementById('maintenanceOverlay').style.display = 'flex'; } else { document.getElementById('maintenanceOverlay').style.display = 'none'; }
+                if(settingsData.rewardEnabled === false) { document.getElementById('rewardOffWarning').style.display = 'block'; } else { document.getElementById('rewardOffWarning').style.display = 'none'; }
+            }
+
+            const taskRes = await fetch(`${API_URL}/tasks`); const tasks = await taskRes.json(); const taskContainer = document.getElementById('taskList');
+            if(me.isBanned) { taskContainer.innerHTML = '<p style="text-align:center; color:red;">ব্যান থাকায় টাস্ক করা যাবে না।</p>'; } else {
+                taskContainer.innerHTML = tasks.map(task => {
+                    let isCompleted = me.completedTasks && me.completedTasks.includes(task.id);
+                    let btn = isCompleted ? `<button class="btn-success" disabled>সম্পন্ন</button>` : (task.type === 'copy' ? `<button class="btn-primary" onclick="copyLink(${task.id}, '${task.link}', ${task.reward}, '${task.title}')">কপি লিংক</button>` : `<button class="btn-primary" onclick="openTask(${task.id}, '${task.title}', '${task.link}', ${task.reward})">শুরু</button>`);
+                    return `<div class="task-item"><div class="task-info"><h4>${task.title}</h4><span>${task.type} | ৳${task.reward}</span></div>${btn}</div>`;
+                }).join('');
+            }
+
+            const notifRes = await fetch(`${API_URL}/notifications/${currentUser}`); const notifs = await notifRes.json(); const notifList = document.getElementById('notificationList');
+            if(notifs.length > 0) {
+                notifList.innerHTML = notifs.map(n => `<div class="notif-item"><div class="notif-icon">${n.type === 'personal' ? '👤' : '📢'}</div><div class="notif-content"><h5>${n.title} <span class="notif-badge ${n.type === 'personal' ? 'notif-personal' : 'notif-global'}">${n.type === 'personal' ? 'ব্যক্তিগত' : 'সাধারণ'}</span></h5><p>${n.msg}</p></div></div>`).join('');
+                document.getElementById('notifBadge').style.display = 'inline-block'; document.getElementById('notifBadge').innerText = notifs.length;
+            } else { notifList.innerHTML = '<p style="text-align:center;">কোনো নোটিশ নেই</p>'; document.getElementById('notifBadge').style.display = 'none'; }
+        }
+
+        async function renderLeaderboard() {
+            const res = await fetch(`${API_URL}/admin/users`, { headers: { 'admin-uid': currentUser } }); if(!res.ok) return; const users = await res.json();
+            document.getElementById('leaderboardList').innerHTML = users.sort((a, b) => b.balance - a.balance).map((u, i) => {
+                let r = i+1; if(i===0) r='🥇'; if(i===1) r='🥈'; if(i===2) r='🥉'; return `<div class="leaderboard-item"><div class="rank">${r}</div><div class="user-info"><strong>${u.name}</strong><br><small>@${u.username || u.uid}</small></div><div style="font-weight:bold; color:var(--success)">৳${u.balance}</div></div>`;
+            }).join('');
+        }
+
+        async function toggleRewardSetting() {
+            const isChecked = document.getElementById('rewardToggle').checked;
+            await fetch(`${API_URL}/register`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ uid: currentUser, deviceId: 'tg_'+currentUser, vpnInfo: detectVPN(), settings: { autoReward: isChecked } }) });
+            showToast(isChecked ? 'অটো রিওয়ার্ড চালু' : 'অটো রিওয়ার্ড বন্ধ');
+        }
+
+        let currentTaskId = null; let currentTaskData = null;
+        function openTask(id, title, link, reward) {
+            currentTaskId = id; currentTaskData = { title, link, reward }; document.getElementById('modalTitle').innerText = title;
+            const modalLink = document.getElementById('modalLink'); modalLink.href = link; modalLink.style.display = 'block'; document.getElementById('timerArea').style.display = 'none'; document.getElementById('claimBtn').style.display = 'none';
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+        document.getElementById('modalLink').onclick = function() {
+            this.style.display = 'none'; const timerArea = document.getElementById('timerArea'); const countdown = document.getElementById('countdown'); timerArea.style.display = 'block'; let t = 5; countdown.innerText = t;
+            const iv = setInterval(() => { t--; countdown.innerText = t; if(t<=0) { clearInterval(iv); timerArea.style.display = 'none'; document.getElementById('claimBtn').style.display = 'block'; } }, 1000);
+        };
+        document.getElementById('claimBtn').onclick = async function() { await completeTask(currentTaskId); closeModal(); };
+        function closeModal() { document.getElementById('taskModal').style.display = 'none'; }
+
+        async function completeTask(id) {
+            if(!currentTaskData) return; const { title, reward } = currentTaskData;
+            const res = await fetch(`${API_URL}/complete-task`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ uid: currentUser, taskId: id, reward, title }) });
+            const result = await res.json(); if(result.success) { showToast('টাকা যোগ হয়েছে!'); renderDashboard(); } else { showToast(result.message); }
+        }
+
+        async function copyLink(id, link, reward, title) {
+            navigator.clipboard.writeText(link).then(async () => {
+                const userRes = await fetch(`${API_URL}/user/${currentUser}`); const user = await userRes.json();
+                if(user.settings && user.settings.autoReward !== false) {
+                    const res = await fetch(`${API_URL}/complete-task`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ uid: currentUser, taskId: id, reward, title }) });
+                    const result = await res.json(); if(result.success) { showToast('টাকা যোগ হয়েছে!'); renderDashboard(); } else { showToast(result.message); }
+                } else { showToast('লিংক কপি হয়েছে (রিওয়ার্ড বন্ধ)'); }
+            });
+        }
+
+        async function handleWithdraw(e) {
+            e.preventDefault(); const amount = document.getElementById('withdrawAmount').value; const method = document.getElementById('paymentMethod').value; const number = document.getElementById('paymentNumber').value;
+            const res = await fetch(`${API_URL}/withdraw`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: Date.now(), uid: currentUser, amount, method, number }) });
+            const data = await res.json(); if(data.success) { showToast('রিকোয়েস্ট পাঠানো হয়েছে'); document.getElementById('withdrawAmount').value = ''; } else { showToast(data.error || 'এরর'); }
+        }
+
+        async function renderAdminPanel() {
+            const usersRes = await fetch(`${API_URL}/admin/users`, { headers: { 'admin-uid': currentUser } }); if(!usersRes.ok) { showToast('এডমিন এক্সেস ব্যর্থ!'); switchRole(); return; }
+            const users = await usersRes.json(); let deviceCounts = {}; users.forEach(u => { deviceCounts[u.deviceId] = (deviceCounts[u.deviceId] || 0) + 1; });
+            document.getElementById('userListAdmin').innerHTML = users.map(u => { 
+                let isMulti = deviceCounts[u.deviceId] > 1; let vpnBadgeHtml = (u.vpnInfo && u.vpnInfo.isSuspicious) ? `<span class="vpn-badge">VPN</span>` : '';
+                return `<div class="card" style="border-left: 5px solid ${isMulti ? 'red' : 'green'}; padding:10px; margin-bottom:8px;"><strong>${u.name}</strong> ${vpnBadgeHtml}<br><small>@${u.username || ''} | ৳${u.balance}</small><br>${isMulti ? '<small style="color:red;">⚠️ ডুপ্লিকেট</small><br>' : ''}<div style="margin-top:5px; gap:5px;">${u.isBanned ? `<button onclick="toggleBan('${u.uid}')" class="btn-success" style="padding:4px 8px; font-size:12px;">Unban</button>` : `<button onclick="toggleBan('${u.uid}')" class="btn-danger" style="padding:4px 8px; font-size:12px;">Ban</button>`}<button onclick="prefillEdit('${u.uid}')" class="btn-primary" style="padding:4px 8px; font-size:12px;">Edit</button></div></div>`;
+            }).join('');
+
+            const taskRes = await fetch(`${API_URL}/tasks`); const tasks = await taskRes.json();
+            document.getElementById('adminTaskList').innerHTML = tasks.length ? tasks.map(t => `<div class="task-item" style="margin-bottom: 5px;"><div class="task-info"><h4 style="font-size:14px">${t.title}</h4><span>৳${t.reward} | ${t.type}</span></div><button onclick="adminDeleteTask(${t.id})" class="btn-danger" style="padding:4px 8px; font-size:12px;">Delete</button></div>`).join('') : '<p>কোনো টাস্ক নেই</p>';
+
+            const reqRes = await fetch(`${API_URL}/withdraws`, { headers: { 'admin-uid': currentUser } }); const reqs = await reqRes.json();
+            document.getElementById('requestList').innerHTML = reqs.length ? reqs.map(r => `<div class="card" style="padding:10px; border:1px solid #ddd;"><b>${r.method} - ৳${r.amount}</b><br>No: ${r.number} | TG: ${r.uid}<br><div style="margin-top:5px;"><button onclick="approveWithdraw(${r.id}, 'approved')" class="btn-success" style="font-size:12px">Approve</button><button onclick="approveWithdraw(${r.id}, 'rejected')" class="btn-danger" style="font-size:12px">Reject</button></div></div>`).join('') : 'কোনো রিকোয়েস্ট নেই';
+
+            const setRes = await fetch(`${API_URL}/settings`); const sett = await setRes.json();
+            if(sett) {
+                const btn = document.getElementById('maintenanceBtn'); const txt = document.getElementById('maintenanceStatus');
+                if(sett.maintenanceMode) { btn.innerText = "বন্ধ করুন"; btn.className = "btn-danger"; txt.innerText = "চালু"; txt.style.color = "var(--danger)"; } else { btn.innerText = "চালু করুন"; btn.className = "btn-warning"; txt.innerText = "বন্ধ"; txt.style.color = "var(--success)"; }
+                if(sett.maintenanceMsg) document.getElementById('maintenanceMsg').value = sett.maintenanceMsg;
+                document.getElementById('globalRewardToggle').checked = sett.rewardEnabled !== false;
+            }
+        }
+
+        async function toggleBan(uid) { await fetch(`${API_URL}/admin/toggle-ban`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ uid }) }); renderAdminPanel(); }
+        function prefillEdit(uid) { document.getElementById('editUserUid').value = uid; document.getElementById('editAmount').value = ''; showToast('ID সিলেক্ট হয়েছে'); }
+        async function manualPayment() {
+            let uid = document.getElementById('editUserUid').value.trim(); let amt = document.getElementById('editAmount').value; if(!uid || !amt) { showToast('তথ্য দিন'); return; }
+            await fetch(`${API_URL}/admin/update-balance`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ uid, amount: amt }) }); showToast('আপডেট সফল'); document.getElementById('editUserUid').value = ''; document.getElementById('editAmount').value = ''; renderAdminPanel();
+        }
+        async function adminAddTask(e) {
+            e.preventDefault(); const task = { id: Date.now(), title: document.getElementById('newTaskTitle').value, link: document.getElementById('newTaskLink').value, reward: parseFloat(document.getElementById('newTaskReward').value), type: document.getElementById('newTaskType').value };
+            await fetch(`${API_URL}/tasks`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify(task) }); showToast('টাস্ক অ্যাড হয়েছে'); e.target.reset(); renderAdminPanel();
+        }
+        async function adminDeleteTask(id) { if(!confirm("ডিলিট?")) return; await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE', headers: { 'admin-uid': currentUser } }); renderAdminPanel(); }
+        async function sendBroadcast(type) {
+            let title = type === 'global' ? "সবার নোটিশ" : "ব্যক্তিগত নোটিশ"; let msg = type === 'global' ? document.getElementById('broadcastMsg').value : document.getElementById('personalMsg').value; let target = type === 'global' ? null : document.getElementById('personalTargetUid').value;
+            if(!msg || (type === 'personal' && !target)) { showToast('তথ্য দিন'); return; }
+            await fetch(`${API_URL}/notification`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ type, target, title, msg }) }); showToast('নোটিশ গেছে'); document.getElementById('broadcastMsg').value = ''; document.getElementById('personalMsg').value = '';
+        }
+        async function approveWithdraw(id, status) { await fetch(`${API_URL}/withdraw-action`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ id, status }) }); renderAdminPanel(); }
+        async function toggleMaintenance() {
+            const isOn = document.getElementById('maintenanceBtn').innerText === "বন্ধ করুন"; const msg = document.getElementById('maintenanceMsg').value; const setRes = await fetch(`${API_URL}/settings`); const sett = await setRes.json();
+            await fetch(`${API_URL}/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ maintenanceMode: !isOn, maintenanceMsg: msg, rewardEnabled: sett.rewardEnabled !== false }) }); renderAdminPanel(); renderDashboard();
+        }
+        async function toggleGlobalReward() {
+            const isOn = document.getElementById('globalRewardToggle').checked; const setRes = await fetch(`${API_URL}/settings`); const sett = await setRes.json();
+            await fetch(`${API_URL}/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'admin-uid': currentUser }, body: JSON.stringify({ maintenanceMode: sett.maintenanceMode || false, maintenanceMsg: sett.maintenanceMsg || '', rewardEnabled: isOn }) }); renderAdminPanel(); renderDashboard();
+        }
+
+        function showSection(id) { ['tasks', 'notifications', 'withdraw', 'leaderboard'].forEach(s => document.getElementById(s + '-section').style.display = (s === id ? 'block' : 'none')); document.querySelectorAll('#userView .tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); if(id === 'leaderboard') renderLeaderboard(); }
+        function showAdminSection(id) { ['users', 'manageTasks', 'broadcast', 'requests', 'settings'].forEach(s => document.getElementById('admin-' + s).style.display = (s === id ? 'block' : 'none')); document.querySelectorAll('#adminView .tab').forEach(t => t.classList.remove('active')); event.target.classList.add('active'); if(id !== 'broadcast') renderAdminPanel(); }
+        function switchRole() { const u = document.getElementById('userView'); const a = document.getElementById('adminView'); if(u.style.display === 'none') { u.style.display = 'block'; a.style.display = 'none'; renderDashboard(); } else { u.style.display = 'none'; a.style.display = 'block'; renderAdminPanel(); } }
+        function toggleTheme() { document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'); }
+
+        initApp();
+    </script>
+</body>
+</html>
