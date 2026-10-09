@@ -1,4 +1,4 @@
-# ©️ DramaZ.botz | @  | NT_BOT_CHANNEL
+# ©️ DramaZ.botz | @ 👨‍💻 Developer: DramaZ.botz | NT_BOT_CHANNEL
 #
 # Advanced Telegram Channel Copy System
 # Source Channel -> Target Channel
