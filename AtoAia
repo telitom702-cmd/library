@@ -1,19 +1,19 @@
-import logging
+import re, base64, json
 from struct import pack
-import re
-import base64
 from pyrogram.file_id import FileId
-from typing import Dict, List
-from collections import defaultdict
+from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from umongo import Instance, Document, fields
-from motor.motor_asyncio import AsyncIOMotorClient
-from marshmallow import ValidationError
-from info import *
-from utils import get_settings, save_group_settings
-from episode_order import episode_sort_key, is_episode_query, order_episode_page
-from datetime import datetime, timedelta
-import asyncio
+from info import FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
+
+# First Database For File Saving
+client = MongoClient(FILE_DB_URI)
+db = client[DATABASE_NAME]
+col = db[COLLECTION_NAME]
+
+# Second Database For File Saving
+sec_client = MongoClient(SEC_FILE_DB_URI)
+sec_db = sec_client[DATABASE_NAME]
+sec_col = sec_db[COLLECTION_NAME]
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
